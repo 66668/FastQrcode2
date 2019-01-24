@@ -5,6 +5,33 @@ package com.ruijia.qrcode;
  */
 public class Constants {
     /**
+     * ===================发送端/接收端 通用标记=====================
+     */
+    public static String sendOver_Contnet = "QrcodeContentSendOver";//发送端 所有数据一次发送完成，发送结束标记
+    public static String receiveOver_Content = "QrCodeContentReceiveOver";//接收端 完全收到数据，发送结束标记
+    public static String recv_loss_all = "QrCodeReceiveLossAll";//接收端 丢失全部数据
+    //
+    public static String SUCCESS = "Success";//传输成功结束标记，和sendOver_Contnet和receiveOver_Content拼接使用 不要动
+    public static String FAILED = "Failed";//传输失败结束标记，和sendOver_Contnet和receiveOver_Content拼接使用 不要动
+    public static String endTag = "RJQR";//不要动
+    public static String send_init = "QrcodeSENDCONNECTQrcodeSENDCONNECT/";//发送端 发送连接信息，通知接收端初始化数据
+    public static String recv_init = "QrcodeRECVCONNECTQrcodeRECVCONNECT/";//接收端 发送连接信息，通知发送端发送数据
+
+    //================================================================================
+    //==========================整体流程控制参数设置============================
+    //================================================================================
+
+    public static final int FOCUS_TIME = 2000;//摄像头聚焦间隔（使二维码更好识别的暴力方式）
+
+    public static final int TIMEOUT = 20;//连接超时
+
+    public static final int CONNECT_TIMEOUT = 30;//通讯超时
+
+    public static final int SEND_FLAG_TIME = 2500;//发送端：最后一张图显示时间
+
+    public static final int RECV_FLAG_TIME = 5000;//接收端：最后一张图显示时间
+
+    /**
      * 发送时间间隔
      * <p>
      * 默认150
@@ -17,14 +44,13 @@ public class Constants {
      * 最大文件大小 默认5M
      */
     public static final String FILE_SIZE = "fileSize";
-    public static final int DEFAULT_SIZE = 2;
+    public static final int DEFAULT_SIZE = 3;
     /**
      * 缺失端拼接最大长度
      */
     public static final int LOST_LENGTH = 2600;
 
     public static final String CON_TIME_OUT = "connect_timeout";
-    public static final int TIMEOUT = 15;
 
     /**
      * 字符流 截取长度
@@ -40,7 +66,7 @@ public class Constants {
     /**
      * 识别过程，最大20次来回传图没有结果，强制结束
      */
-    public static final int MAX_TIMES = 20;
+    public static final int MAX_SEND_TIMES = 20;
 
 
     /**

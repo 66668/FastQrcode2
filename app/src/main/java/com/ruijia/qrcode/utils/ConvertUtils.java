@@ -1,5 +1,8 @@
 package com.ruijia.qrcode.utils;
 
+/**
+ * 二维码片段 标记位
+ */
 public class ConvertUtils {
 
     //int 转7位数的String长度

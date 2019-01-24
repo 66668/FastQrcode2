@@ -32,9 +32,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
+ * 备用类
+ * <p>
  * aidl 链路层的服务端service,给aidl客户端提供service接口
  */
-public class QRXmitService extends Service {
+public class QRXmitService2 extends Service {
     public static final String TAG = "SJY";
     private static final int qrSize = 800;//该值和屏幕宽度尺寸相关
     //---------------------------变量-------------------------------
@@ -47,6 +49,7 @@ public class QRXmitService extends Service {
     private String selectPath;//当前传输的文件
     private OnServiceAndActListener listener;//
     private List<String> newDatas = new ArrayList<>();
+    private List<Bitmap> maps = new ArrayList<>();
     private int size = 0;//当前文件的list长度
     private long fileSize = 0;//文件大小
 
@@ -54,7 +57,7 @@ public class QRXmitService extends Service {
     /**
      * 客户端开启连接后，自动执行
      */
-    public QRXmitService() {
+    public QRXmitService2() {
         handler = new Handler();
         //设置默认发送时间间隔
         SPUtil.putInt(Constants.TIME_INTERVAL, Constants.DEFAULT_TIME);
@@ -82,8 +85,8 @@ public class QRXmitService extends Service {
     public class QrAIDLServiceBinder extends QrAIDLInterface.Stub {
 
         //act与service交互使用
-        public QRXmitService geSerVice() {
-            return QRXmitService.this;
+        public QRXmitService2 geSerVice() {
+            return QRXmitService2.this;
         }
 
         //aidl使用
@@ -113,6 +116,7 @@ public class QRXmitService extends Service {
             //解除
             mListener.unregister(listener);
         }
+
     }
 
 
@@ -126,7 +130,7 @@ public class QRXmitService extends Service {
     //-----------------------《客户端-->服务端》操作（不同进程）----------------------
 
     /**
-     * 设置参数
+     *
      */
     public boolean srvQRCtrl(int timeInterval, int fileSize) {
         Log.d(TAG, "服务端设置参数-QRCtrl--timeInterval=" + timeInterval + "--fileSize=" + fileSize);
@@ -136,7 +140,7 @@ public class QRXmitService extends Service {
         SPUtil.putInt(Constants.CON_TIME_OUT, 20);//TODO
 
         return (SPUtil.getInt(Constants.TIME_INTERVAL, 0) != 0
-                && SPUtil.getInt(Constants.FILE_SIZE, 0) != 0
+                && SPUtil.getInt(Constants.TIME_INTERVAL, 0) != 0
                 && SPUtil.getInt(Constants.CON_TIME_OUT, 0) != 0);
     }
 
@@ -184,6 +188,7 @@ public class QRXmitService extends Service {
         selectPath = "";//当前传输的文件
         OnServiceAndActListener listener;//
         newDatas = new ArrayList<>();
+        maps = new ArrayList<>();
         size = 0;//当前文件的list长度
     }
 
@@ -352,10 +357,132 @@ public class QRXmitService extends Service {
                     //调起链路层传输数据
                     serviceStartAct();
 
+                    //转qrbitmap 方式1
+//                      createQrBitmap();
+
+//                    方式2:
+//                    try {
+//                        if (size < 50) {//150KB
+//                            createQrBitmap2(newDatas, 1);
+//                        } else if (size < 100) {//300KB
+//                            createQrBitmap2(newDatas, 1);
+//                        } else if (size < 500) {//1.5M左右
+//                            createQrBitmap2(newDatas, 1);
+//                        } else {//大于1.5M
+//                            createQrBitmap2(newDatas, 1);
+//                        }
+//                        //测试ArrayList的非线程安全
+//                        Log.d("SJY", "原数据大小=" + newDatas.size() + "结果大小=" + maps.size());
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        Log.e("SJY", "createQrBitmap异常：" + e.toString());
+//                    }
                 }
 
             }
         }.execute();
+    }
+
+    /**
+     * (4)list转qrbitmap
+     * 方式1：list大段直接转，耗时长
+     *
+     * <p>
+     */
+    private void createQrBitmap() {
+
+        new AsyncTask<Void, Void, List<Bitmap>>() {
+
+            @Override
+            protected List<Bitmap> doInBackground(Void... voids) {
+                //
+                List<Bitmap> sendImgs = new ArrayList<>();
+                long startTime = System.currentTimeMillis();
+                //sendDatas 转qrbitmap
+                for (int i = 0; i < size; i++) {
+                    long start = System.currentTimeMillis();
+                    Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), qrSize);
+                    sendImgs.add(bitmap);
+                    //回调客户端
+                    long end = System.currentTimeMillis() - start;
+                    createQrImgProgress(size, i, "生成单张二维码耗时=" + end);
+                }
+                //回调客户端
+                long time = System.currentTimeMillis() - startTime;
+                createQrImgTime(time, "createQrBitmap:list--->qrbitmap");
+                return sendImgs;
+            }
+
+            @Override
+            protected void onPostExecute(List<Bitmap> bitmapList) {
+                super.onPostExecute(bitmapList);
+                maps = new ArrayList<>();
+                maps = bitmapList;
+                //service与act的交互
+                //调起链路层传输数据
+                serviceStartAct();
+            }
+        }.execute();
+    }
+
+    /**
+     * (4)list转qrbitmap
+     * <p>
+     * 方式2：并发线程池方式
+     * <p>
+     * 结论：ArrayList 非线程安全，容易导致size变大，线程数再大速度只能缩短一倍。
+     *
+     * @param list
+     * @param nThreads
+     * @throws Exception
+     */
+    List<String> subList = new ArrayList<>();
+
+    public void createQrBitmap2(List<String> list, final int nThreads) throws Exception {
+        maps = new ArrayList<>();
+        subList = new ArrayList<>();
+        int size = list.size();
+        ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+        List<Future<List<Bitmap>>> futures = new ArrayList<Future<List<Bitmap>>>(nThreads);
+        long startTime = System.currentTimeMillis();//统计
+        for (int i = 0; i < nThreads; i++) {
+            if (i == (nThreads - 1)) {
+                subList = list.subList(size / nThreads * i, list.size());
+            } else {
+                subList = list.subList(size / nThreads * i, size / nThreads * (i + 1));
+            }
+
+            final int finalI = i;
+            Callable<List<Bitmap>> task = new Callable<List<Bitmap>>() {
+                @Override
+                public List<Bitmap> call() throws Exception {
+                    List<Bitmap> unitLists = new ArrayList<>();
+                    long startTime = System.currentTimeMillis();//统计
+                    for (int j = 0; j < subList.size(); j++) {
+                        long start = System.currentTimeMillis();//统计
+                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(subList.get(j), qrSize);
+                        unitLists.add(bitmap);
+                        //回调客户端
+                        long end = System.currentTimeMillis() - start;
+                        createQrImgProgress(subList.size(), j, "生成单张二维码耗时=" + end + "---线程池编号：" + finalI);
+                    }
+                    //回调客户端
+                    long time = System.currentTimeMillis() - startTime;
+                    createQrImgTime(time, "单个线程池编号:" + finalI);
+                    return unitLists;
+                }
+            };
+            futures.add(executorService.submit(task));
+        }
+        for (Future<List<Bitmap>> mfuture : futures) {
+            maps.addAll(mfuture.get());
+        }
+        //清空数据。
+        subList = new ArrayList<>();
+        //回调客户端
+        long time = System.currentTimeMillis() - startTime;
+        createQrImgTime(time, "所有线程池执行:list--->qrbitmap");
+        executorService.shutdown();
     }
 
 
@@ -669,7 +796,7 @@ public class QRXmitService extends Service {
             isTrans(true, "MainAct在前台运行");
             //接口回调
             if (listener != null) {
-                listener.onQrsend(selectPath, newDatas, fileSize);
+                listener.onQrsend(selectPath, newDatas, fileSize);//隐藏 (selectPath, newDatas, maps,fileSize)
             } else {
                 isTrans(false, "链路层未启动，回调无法使用listener=null");
             }
@@ -729,7 +856,7 @@ public class QRXmitService extends Service {
     }
 
     /**
-     * act的service连接完成后，通知service回调act，将数据传给act
+     * act的service连接完成后，通知service回调act
      */
     public void startServiceTrans() {
         //

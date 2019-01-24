@@ -37,6 +37,8 @@ import lib.ruijia.zbar.qrcodecore.BarcodeType;
 import lib.ruijia.zbar.qrodecontinue.ContinueQRCodeView;
 
 /**
+ * 原始版本
+ * <p>
  * 链路层 物理连接
  * 开启MainAct识别功能有两种方式，1：若MainAct没启动，使用service的serviceStartAct()方法启动 2：若MainAct已在前端显示，service使用接口回调启动
  */
@@ -1207,14 +1209,14 @@ public class MainAct2 extends BaseAct implements ContinueQRCodeView.Delegate {
      */
     private OnServiceAndActListener myListener = new OnServiceAndActListener() {
         @Override
-        public void onQrsend(String path, List<String> newData, List<Bitmap> maps, long fileSize) {
+        public void onQrsend(String path, List<String> newData, long fileSize) {
             Log.d(TAG, "onQrsend监听 发送");
             //清空发送端数据，保证本次数据不受上一次影响
             initSendParams();
             //赋值
             sendFlePath = path;
             sendDatas = newData;
-            sendImgs = maps;
+//            sendImgs = maps;
             sendSize = sendDatas.size();
             MainAct2.this.fileSize = fileSize;
             //

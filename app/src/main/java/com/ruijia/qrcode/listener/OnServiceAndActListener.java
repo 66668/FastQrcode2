@@ -9,5 +9,5 @@ import java.util.Map;
  * service向act发起调用
  */
 public interface OnServiceAndActListener {
-    void onQrsend(String selectPath,List<String> newData, List<Bitmap> map,long fileSize);
+    void onQrsend(String selectPath, List<String> newData, long fileSize);
 }

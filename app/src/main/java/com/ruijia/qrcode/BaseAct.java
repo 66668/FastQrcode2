@@ -23,6 +23,8 @@ public class BaseAct extends AppCompatActivity {
     String[] permissionArray;
     PermissionHelper permissionHelper;
 
+
+
     /**
      * 测试B与链路层aidl
      */
