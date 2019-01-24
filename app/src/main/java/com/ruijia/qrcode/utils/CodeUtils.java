@@ -10,13 +10,13 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.ruijia.qrcode.Constants;
 
 import java.io.File;
 import java.util.Hashtable;
 
 /**
  * 各种生成二维码的方式，验证哪一个生成的容量最大
- *
  */
 public class CodeUtils {
 
@@ -24,11 +24,11 @@ public class CodeUtils {
      * MultiFormatWriter 类
      *
      * @param content
-     * @param size size很重要，对于连续识别功能，size关乎图片的清晰度
+     * @param size    size很重要，对于连续识别功能，size关乎图片的清晰度
      * @return
      */
     public static Bitmap createByMultiFormatWriter(String content, int size) {
-        if(content==null||TextUtils.isEmpty(content)||content.length()>2952){
+        if (content == null || TextUtils.isEmpty(content) || content.length() > Constants.MAX_QR_SIZE) {
             return null;
         }
         Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();

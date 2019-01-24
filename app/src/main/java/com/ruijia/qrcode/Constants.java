@@ -14,8 +14,8 @@ public class Constants {
     public static String SUCCESS = "Success";//传输成功结束标记，和sendOver_Contnet和receiveOver_Content拼接使用 不要动
     public static String FAILED = "Failed";//传输失败结束标记，和sendOver_Contnet和receiveOver_Content拼接使用 不要动
     public static String endTag = "RJQR";//不要动
-    public static String send_init = "QrcodeSENDCONNECTQrcodeSENDCONNECT/";//发送端 发送连接信息，通知接收端初始化数据
-    public static String recv_init = "QrcodeRECVCONNECTQrcodeRECVCONNECT/";//接收端 发送连接信息，通知发送端发送数据
+    public static String send_init = "QrcodeSENDCONNECTQrcodeSENDCONNECT";//发送端 发送连接信息，通知接收端初始化数据
+    public static String recv_init = "QrcodeRECVCONNECTQrcodeRECVCONNECT";//接收端 发送连接信息，通知发送端发送数据
 
     //================================================================================
     //==========================整体流程控制参数设置============================
@@ -38,7 +38,7 @@ public class Constants {
      */
     public static final String TIME_INTERVAL = "time_interval";
 
-    public static final int DEFAULT_TIME = 400;
+    public static final int DEFAULT_TIME = 175;
 
     /**
      * 最大文件大小 默认5M
@@ -46,7 +46,7 @@ public class Constants {
     public static final String FILE_SIZE = "fileSize";
     public static final int DEFAULT_SIZE = 3;
     /**
-     * 缺失端拼接最大长度
+     * 一张缺失图最大长度
      */
     public static final int LOST_LENGTH = 2600;
 
@@ -60,7 +60,13 @@ public class Constants {
      * 最强性能长度 2935
      */
     public static final int qrSize = 2930;//
-    public static final int qrBitmapSize = 200;//
+
+    /**
+     * zxing3.3.3库最大string值是2952
+     */
+    public static final int MAX_QR_SIZE = 2952;//
+
+    public static final int qrBitmapSize = 200;//二维码最大支持的尺寸，默认为200
 
 
     /**
