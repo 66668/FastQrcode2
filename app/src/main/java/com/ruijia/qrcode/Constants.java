@@ -21,15 +21,15 @@ public class Constants {
     //==========================整体流程控制参数设置============================
     //================================================================================
 
-    public static final int FOCUS_TIME = 2000;//摄像头聚焦间隔（使二维码更好识别的暴力方式）
+    public static final int FOCUS_TIME = 2000;//摄像头聚焦间隔（使二维码更好识别的暴力方式） ms
 
-    public static final int TIMEOUT = 20;//连接超时
+    public static final int TIMEOUT = 20;//连接超时 次数
 
-    public static final int CONNECT_TIMEOUT = 30;//通讯超时
+    public static final int CONNECT_TIMEOUT = 30;//通讯超时  次数
 
-    public static final int SEND_FLAG_TIME = 2500;//发送端：最后一张图显示时间
+    public static final int SEND_FLAG_TIME = 2500;//发送端：最后一张图显示时间 ms
 
-    public static final int RECV_FLAG_TIME = 5000;//接收端：最后一张图显示时间
+    public static final int RECV_FLAG_TIME = 5000;//接收端：最后一张图显示时间 ms
 
     /**
      * 发送时间间隔
@@ -38,10 +38,20 @@ public class Constants {
      */
     public static final String TIME_INTERVAL = "time_interval";
 
-    public static final int DEFAULT_TIME = 175;
+    /**
+     * 发送时间间隔
+     * <p>
+     * 关键参数
+     * <p>
+     * 说明：和手机性能有关，性能好，可以设置低一些，最低大概在60～90之间（相机预览取帧的间隔时间）
+     * 使用：
+     * 小米5s的最低间隔是130，400～500的间隔数据能完全传输。
+     * 所以在130～400之间找最低值且保证速率
+     */
+    public static final int DEFAULT_TIME = 175;//关键
 
     /**
-     * 最大文件大小 默认5M
+     * 最大文件大小 默认3M
      */
     public static final String FILE_SIZE = "fileSize";
     public static final int DEFAULT_SIZE = 3;
