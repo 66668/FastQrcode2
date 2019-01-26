@@ -48,7 +48,7 @@ public class Constants {
      * 小米5s的最低间隔是130，400～500的间隔数据能完全传输。
      * 所以在130～400之间找最低值且保证速率
      */
-    public static final int DEFAULT_TIME = 175;//关键
+    public static final int DEFAULT_TIME = 190;//关键
 
     /**
      * 最大文件大小 默认3M

@@ -1247,83 +1247,60 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
             @Override
             public void run() {
                 final long moreTime = System.currentTimeMillis() - lastSaveTime;
-                if (sendImgsMore.size() > 0 && sendCounts < sendImgsMore.size()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (sendImgsMore.size() > 0 && sendCounts < sendImgsMore.size()) {
+                            MyData data = null;
                             try {
                                 //回调发送间隔，用于计算识别速度，也用于鉴别 发送间隔是否标准
                                 myService.sendAidlQrUnitTime((System.currentTimeMillis() - lastSaveTime), sendImgsMore.size(), sendCounts, "secondMore--发送间隔=" + moreTime);
-
-                                MyData data = sendImgsMore.get(sendCounts);
-                                setImageViewWidth(data.width);
-                                img_result.setImageBitmap(data.bitmap);
-
-                                sendCounts++;
+                                data = sendImgsMore.get(sendCounts);
 
                             } catch (final Exception e) {
-                                try {
-                                    //终止倒计时
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-
-                                            Log.e(TAG, "二次+发送数据异常=" + e.toString());
-                                            showSendBitmap(flag_send_over, Constants.SEND_FLAG_TIME);//结束码
-                                            feedbackTime = System.currentTimeMillis();//发送结束-加入时间
-                                            if (timer != null) {
-                                                timer.cancel();
-                                                timer = null;
-                                            }
-                                        }
-                                    });
-
-                                } catch (Exception e1) {
-                                    //已处理
-                                    e1.printStackTrace();
-                                }
-
-                            }
-                            lastSaveTime = System.currentTimeMillis();
-                        }
-                    });
-
-                } else {
-
-                    //统计
-                    long backSize = 0;//缺失片段总长度
-                    for (MyData myDataaa : sendImgsMore) {
-                        backSize += myDataaa.width;
-                    }
-                    long time = System.currentTimeMillis() - handler_lastTime;
-                    send_transMSG += "二次+发送二维码速率=" + (backSize * 1000 / time) + "B/s\n";
-
-                    //同上catch
-                    //发送结束标记，结束标记为：QrcodeContentSendOver+文件路径+文件大小（7位数）
-                    try {
-                        //终止倒计时
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showSendBitmap(flag_send_over, Constants.SEND_FLAG_TIME);
+                                //终止倒计时
+                                Log.e(TAG, "二次+发送数据异常=" + e.toString());
+                                showSendBitmap(flag_send_over, Constants.SEND_FLAG_TIME);//结束码
                                 feedbackTime = System.currentTimeMillis();//发送结束-加入时间
                                 if (timer != null) {
                                     timer.cancel();
                                     timer = null;
                                 }
                             }
-                        });
+                            setImageViewWidth(data.width);
+                            img_result.setImageBitmap(data.bitmap);
+                            sendCounts++;
+                            lastSaveTime = System.currentTimeMillis();
 
-                    } catch (Exception e) {
-                        //已处理
-                        e.printStackTrace();
+                        } else {
+
+                            //统计
+                            long backSize = 0;//缺失片段总长度
+                            for (MyData myDataaa : sendImgsMore) {
+                                backSize += myDataaa.width;
+                            }
+                            long time = System.currentTimeMillis() - handler_lastTime;
+                            send_transMSG += "二次+发送二维码速率=" + (backSize * 1000 / time) + "B/s\n";
+
+                            //发送结束标记，结束标记为：QrcodeContentSendOver+文件路径+文件大小（7位数）
+                            //终止倒计时
+                            showSendBitmap(flag_send_over, Constants.SEND_FLAG_TIME);
+                            feedbackTime = System.currentTimeMillis();//发送结束-加入时间
+                            if (timer != null) {
+                                timer.cancel();
+                                timer = null;
+                            }
+
+                        }
+
                     }
-                }
+                });
 
             }
         }, 100, Constants.DEFAULT_TIME);
 
     }
+
 
     /**
      * TODO
