@@ -7,7 +7,11 @@ import android.graphics.Bitmap;
  */
 public class MyData {
     public Bitmap bitmap;
-    public int width;//bitmap适应多大的ImageView尺寸
+    /**
+     * 片段长度
+     * 用于bitmap适应多大的ImageView尺寸
+     */
+    public int width;//
     public int position;
 
     public MyData(Bitmap bitmap, int width, int position) {
