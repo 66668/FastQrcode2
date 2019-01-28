@@ -26,6 +26,7 @@ public class Constants {
     /**
      * ===================发送端/接收端 通用标记--缓存文件对应的key值=====================
      */
+    //~~~标记图的key~~~
     //
     public static String flag_recv_init = "flag_recv_init";
     public static String flag_recv_init_length = "flag_recv_init_length";
@@ -36,10 +37,14 @@ public class Constants {
     public static String flag_recv_failed = "flag_recv_failed";
     public static String flag_recv_failed_length = "flag_recv_failed_length";
 
-     public static String flag_send_over = "flag_send_over";
+    public static String flag_send_over = "flag_send_over";
     public static String flag_send_over_length = "flag_send_over_length";
 
-
+    //~~~内容的key~~~
+    //bitmap key
+    public static String key_bitmap = "key_bitmap";
+    //内容长度 key
+    public static String key_len = "key_len";
 
     //================================================================================
     //==========================整体流程控制参数设置============================

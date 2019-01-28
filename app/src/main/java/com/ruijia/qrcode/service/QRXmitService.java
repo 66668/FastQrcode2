@@ -471,6 +471,7 @@ public class QRXmitService extends Service {
                     for (int i = 0; i < size; i++) {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
+
                         Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), qrSize);
 
                         long end = System.currentTimeMillis() - start;
@@ -478,7 +479,10 @@ public class QRXmitService extends Service {
 
                         //02 文件保存二维码
                         long start2 = System.currentTimeMillis();
-                        BitmapCacheUtils.getInstance().put("" + i, bitmap);
+                        BitmapCacheUtils.getInstance().put(Constants.key_bitmap + i, bitmap);
+                        long len = newDatas.get(i).length();
+                        BitmapCacheUtils.getInstance().put(Constants.key_len+ i, "" + len);
+
                         //回调客户端
                         long end2 = System.currentTimeMillis() - start2;
                         createQrImgProgress(size, i, "bitmap保存到缓存文件耗时=" + end2);
