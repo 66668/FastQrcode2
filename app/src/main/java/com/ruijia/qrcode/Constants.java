@@ -21,7 +21,7 @@ public class Constants {
     //==========================整体流程控制参数设置============================
     //================================================================================
 
-    public static final int FOCUS_TIME = 2000;//摄像头聚焦间隔（使二维码更好识别的暴力方式） ms
+    public static final int FOCUS_TIME = 2500;//摄像头聚焦间隔（使二维码更好识别的暴力方式） ms
 
     public static final int TIMEOUT = 20;//连接超时 次数
 

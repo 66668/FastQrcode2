@@ -424,7 +424,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         receveSize = 0;//接收端 标记 总数据长度
         recvCounts = 0;//发送次数统计，handler发送使用
         //
-        img_result.setImageBitmap(null);
+        clearImageView();
     }
 
     /**
@@ -476,7 +476,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
             if (timeoutCount > Constants.TIMEOUT) {
                 //该种情况，链路层传输失败。
                 //清空脏数据
-                img_result.setImageBitmap(null);
+                clearImageView();
                 clearRecvParams();
                 //结束倒计时
                 handler.removeCallbacks(this);
@@ -566,7 +566,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         if (showTimer != null) {
             showTimer.cancel();
             showTimer = null;
-            img_result.setImageBitmap(null);
+            clearImageView();
         }
 
         //处理标记
@@ -734,9 +734,9 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                             try {
                                 //TODO 有100ms的耗时 可忽略
                                 String contents = feedBackDatas.get(recvCounts);
-                                setImageViewWidth(contents.length());
+                                setImageViewWidth(contents.length());//01
                                 Bitmap btmap = CodeUtils.createByMultiFormatWriter(contents, Constants.qrBitmapSize);
-                                img_result.setImageBitmap(btmap);
+                                img_result.setImageBitmap(btmap);//02
 
                                 recvCounts++;
                             } catch (Exception e) {
@@ -858,8 +858,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         sendCounts = 0;//发送次数统计(初次发送和二次+发送都是用)
         rcvImgSize = 0;//缺失bitmap个数(通常只有一个)
         //
-        img_result.setImageBitmap(null);
-        img_result.setBackground(null);
+        clearImageView();
         //统计参数
         send_transMSG = "";
         send_feedBackMSG = "";
@@ -899,7 +898,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                 handler.postDelayed(this, 950);
             } else {//连接超时
                 //清除图片
-                img_result.setImageBitmap(null);
+                clearImageView();
                 //清除发送端所有数据
                 clearSendParams();
                 //回调
@@ -1045,7 +1044,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         if (showTimer != null) {
             showTimer.cancel();
             showTimer = null;
-            img_result.setImageBitmap(null);
+            clearImageView();
         }
 
         //处理标记
@@ -1124,7 +1123,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         if (showTimer != null) {
             showTimer.cancel();
             showTimer = null;
-            img_result.setImageBitmap(null);
+            clearImageView();
         }
         removeConnectListener();//发送耗时，需要解除监听
         //结束初始化连接
@@ -1137,7 +1136,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         SendMoreCount = 0;
         rcvImgSize = 0;
         sendBackLists = new ArrayList<>();//初始化数据
-        img_result.setImageBitmap(null);
+        clearImageView();
 
         //开启倒计时
         if (timer != null) {
@@ -1164,8 +1163,8 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
 
                             MyData data = firstSendQueue.pollLast();//
 
-                            setImageViewWidth(data.width);
-                            img_result.setImageBitmap(data.bitmap);
+                            setImageViewWidth(data.width);//01
+                            img_result.setImageBitmap(data.bitmap);//02
                             //保存发送的数据，用于缺失片段查找
                             sendMaps.add(data);
                             sendCounts++;
@@ -1267,8 +1266,8 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                                     timer = null;
                                 }
                             }
-                            setImageViewWidth(data.width);
-                            img_result.setImageBitmap(data.bitmap);
+                            setImageViewWidth(data.width);//01
+                            img_result.setImageBitmap(data.bitmap);//02
                             sendCounts++;
                             lastSaveTime = System.currentTimeMillis();
 
@@ -1378,7 +1377,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         mZBarView = (ZBarContinueView) findViewById(R.id.zbarview);
         mZBarView.setDelegate(this);
         //
-        img_result = (ImageView) findViewById(R.id.barcodePreview);
+        img_result = (ImageView) findViewById(R.id.img_qr);
         //辅助设置，方便设置设备二维码对焦问题
         ly_img = (RelativeLayout) findViewById(R.id.ly_img);
         ly_img.setOnLongClickListener(new View.OnLongClickListener() {
@@ -1677,12 +1676,12 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                         @Override
                         public void run() {
                             if (showTimerCount < 1) {//
-                                setImageViewWidth(data.width);
-                                img_result.setImageBitmap(data.bitmap);
+                                setImageViewWidth(data.width);//01
+                                img_result.setImageBitmap(data.bitmap);//02
                                 showTimerCount++;
                             } else {
                                 updateConnectListener();//耗时完成，添加监听(不可少)
-                                img_result.setImageBitmap(null);
+                                clearImageView();
                                 if (showTimer != null) {
                                     showTimer.cancel();
                                     showTimer = null;
@@ -1731,11 +1730,11 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                                 @Override
                                 public void run() {
                                     if (showTimerCount < 1) {//
-                                        setImageViewWidth(content.length());
-                                        img_result.setImageBitmap(bitmap);
+                                        setImageViewWidth(content.length());//01
+                                        img_result.setImageBitmap(bitmap);//02
                                         showTimerCount++;
                                     } else {
-                                        img_result.setImageBitmap(null);
+                                        clearImageView();
                                         if (showTimer != null) {
                                             showTimer.cancel();
                                             showTimer = null;
@@ -1775,11 +1774,11 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                         @Override
                         public void run() {
                             if (showTimerCount < 1) {
-                                setImageViewWidth(data.width);
-                                img_result.setImageBitmap(data.bitmap);
+                                setImageViewWidth(data.width);//01
+                                img_result.setImageBitmap(data.bitmap);//02
                                 showTimerCount++;
                             } else {
-                                img_result.setImageBitmap(null);
+                                clearImageView();
                                 if (showTimer != null) {
                                     showTimer.cancel();
                                     showTimer = null;
@@ -1792,6 +1791,21 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         } else {
             Log.e(TAG, "showRecvBitmap--生成二维码失败");
         }
+    }
+
+    /**
+     * 只要不显示二维码，就讲ImagView缩小，让摄像头聚焦文字，加速聚焦
+     */
+    private void clearImageView() {
+        //清空
+        img_result.setImageBitmap(null);
+        //缩小
+        ViewGroup.LayoutParams lp = img_result.getLayoutParams();
+        lp.width = 1;
+        lp.height = 1;
+        img_result.setLayoutParams(lp);
+
+
     }
 
 
