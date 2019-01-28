@@ -56,7 +56,7 @@ public class Constants {
     public static final String FILE_SIZE = "fileSize";
     public static final int DEFAULT_SIZE = 3;
     /**
-     * 一张缺失图最大长度
+     * 一张缺失图最大内容长度
      */
     public static final int LOST_LENGTH = 2600;
 

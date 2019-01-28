@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import lib.ruijia.zbar.ZBarContinueView;
 import lib.ruijia.zbar.qrcodecore.BarcodeType;
@@ -94,6 +97,8 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
     private MyData flag_recv_success;//保存数据成功
     private MyData flag_recv_failed;//保存数据失败
 
+    //～～～～～～线程池管理 ～～～～～～
+    ExecutorService executorService = Executors.newFixedThreadPool(5);
     //～～～～～～统计 ～～～～～～
     //时间设置
     private long handler_lastTime;//用于计算文件/片段list发送总耗时。
@@ -1352,7 +1357,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                 });
 
             }
-        }, 100, Constants.DEFAULT_TIME);
+        }, 100, (int) (Constants.DEFAULT_TIME * 1.5));//避免二次+发送次数多，延长发送间隔，争取一次成功
 
     }
 
@@ -1397,30 +1402,32 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         initView();
 
         //创建标记
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (flag_recv_init == null) {
-                    Bitmap recv_init_bitmap = CodeUtils.createByMultiFormatWriter(Constants.recv_init, Constants.qrBitmapSize);
-                    flag_recv_init = new MyData(recv_init_bitmap, getImageViewWidth(Constants.recv_init.length()), -1);
-                }
-                //02
-                if (flag_recv_success == null) {
-                    Bitmap save_success_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.SUCCESS, Constants.qrBitmapSize);
-                    flag_recv_success = new MyData(save_success_bitmap, getImageViewWidth((Constants.receiveOver_Content + Constants.SUCCESS).length()), -1);
-                }
-                //03
-                if (flag_recv_failed == null) {
-                    Bitmap save_failed_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.FAILED, Constants.qrBitmapSize);
-                    flag_recv_failed = new MyData(save_failed_bitmap, getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length()), -1);
+        if (executorService != null) {
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (flag_recv_init == null) {
+                        Bitmap recv_init_bitmap = CodeUtils.createByMultiFormatWriter(Constants.recv_init, Constants.qrBitmapSize);
+                        flag_recv_init = new MyData(recv_init_bitmap, getImageViewWidth(Constants.recv_init.length()), -1);
+                    }
+                    //02
+                    if (flag_recv_success == null) {
+                        Bitmap save_success_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.SUCCESS, Constants.qrBitmapSize);
+                        flag_recv_success = new MyData(save_success_bitmap, getImageViewWidth((Constants.receiveOver_Content + Constants.SUCCESS).length()), -1);
+                    }
+                    //03
+                    if (flag_recv_failed == null) {
+                        Bitmap save_failed_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.FAILED, Constants.qrBitmapSize);
+                        flag_recv_failed = new MyData(save_failed_bitmap, getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length()), -1);
 
+                    }
                 }
-            }
-        }).start();
-
+            });
+        }
         //默认初始化为 接收端
         initRecvParams();
         initSendParams();
+
 
     }
 
@@ -1450,6 +1457,8 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
 
         //开启聚焦任务
         handler.postDelayed(focusTask, 500);
+        //开启线程池
+        executorService = Executors.newFixedThreadPool(5);
     }
 
     /**
@@ -1611,8 +1620,8 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
      * 2 创建发送数据（边生产边发送）
      */
     private void initFirstSendProducerTask() {
-        if (!isFirstProducerRuning) {
-            new Thread() {
+        if (!isFirstProducerRuning && executorService != null) {
+            executorService.execute(new Runnable() {
                 @Override
                 public void run() {
                     //创建发送标记bitmap
@@ -1646,9 +1655,8 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                     }
                     isFirstProducerRuning = false;
                 }
-            }.start();
+            });
         }
-
     }
 
 

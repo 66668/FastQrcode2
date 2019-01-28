@@ -204,7 +204,7 @@ public class DemoActivity extends BaseActivity implements View.OnClickListener {
             Log.d(TAG, "实时状态监听" + isSuccess + "--msg=" + msg);
         } else {
             //TODO 失败，必须处理
-            Log.e(TAG, "本次传输失败，必须要处理，失败原因：" + msg);
+            Log.e(TAG, "本次传输失败：" + msg);
         }
 
     }
@@ -255,7 +255,7 @@ public class DemoActivity extends BaseActivity implements View.OnClickListener {
     void clientTransProgress(long time, int total, int position, String msg) {
         super.clientTransProgress(time, total, position, msg);
         //二维码发送进度，这里只统计了handler处的发送，不统计是否被识别的进度。
-        Log.d(TAG, "二维码发送进度：" + (100 * position / total) + "%--图片显示在界面的时长=" + time + "ms----msg=" + msg + "--position=" + position);
+        Log.i(TAG, "二维码发送进度：" + (100 * position / total) + "%--图片显示在界面的时长=" + time + "ms----msg=" + msg + "--position=" + position);
     }
 
     //08 信息都在msg中，time为文件总耗时
