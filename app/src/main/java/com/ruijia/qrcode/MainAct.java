@@ -224,11 +224,12 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         //发送端：接收端发送初始化信息，发送端接收后发送数据
         if (resultStr.contains(Constants.recv_init)) {
             if (!isSending) {
-                //第一次发送结束后，设置为false
+                //第一次发送结束后，设置为falsef
                 isSending = true;
                 //第一次发送数据
                 startSend();
             }
+
 
         }
 
@@ -1146,14 +1147,16 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         timeoutCount = 0;
         int delayTime = 0;
         if (sendDatas.size() < 25) {//60kb
-            delayTime = 500;
+            delayTime = 4000;
         } else if (sendDatas.size() < 40) {//120kb
-            delayTime = 1000;
+            delayTime = 5500;
         } else if (sendDatas.size() < 80) {//240KB
-            delayTime = 1500;
+            delayTime = 10000;
         } else {
-            delayTime = 5000;
+            delayTime = 15000;
         }
+        //回调
+        myService.isTrans(true, "图片准备中，请等待：" + delayTime + "ms");
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1170,8 +1173,9 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
 
     /**
      * 发送端 发送数据
+     *
      * <p>
-     * 第一次发送
+     * 第一次发送(确保只有一次发送)
      */
     private void startSend() {
         //初始化连接图片倒计时可能没有结束，此处强制结束,避免影响发送数据的识别效率
@@ -1203,16 +1207,17 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                final long time = System.currentTimeMillis() - lastSaveTime;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
+                        long time = System.currentTimeMillis() - lastSaveTime;
                         //回调:发送间隔，用于计算识别速度，也用于鉴别 发送间隔是否标准
                         myService.sendAidlQrUnitTime((System.currentTimeMillis() - lastSaveTime), sendDatas.size(), sendCounts, "firstSend--发送间隔=" + time);
 
                         if (sendCounts < sendDatas.size()) {//发送二维码
                             if (firstSendQueue.size() <= 0) {
-                                Log.d(TAG, "等待消息队列中");
+                                Log.e(TAG, "等待生产中...");
                                 return;
                             }
 
@@ -1303,10 +1308,10 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                final long moreTime = System.currentTimeMillis() - lastSaveTime;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        long moreTime = System.currentTimeMillis() - lastSaveTime;
                         if (sendImgsMore.size() > 0 && sendCounts < sendImgsMore.size()) {
                             MyData data = null;
                             try {
@@ -1357,7 +1362,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                 });
 
             }
-        }, 100, (int) (Constants.DEFAULT_TIME * 1.5));//避免二次+发送次数多，延长发送间隔，争取一次成功
+        }, 100, (int) (Constants.DEFAULT_TIME * 1.2));//避免二次+发送次数多，延长发送间隔，争取一次成功
 
     }
 
