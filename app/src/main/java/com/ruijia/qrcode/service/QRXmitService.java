@@ -15,17 +15,21 @@ import com.ruijia.qrcode.QrAIDLInterface;
 import com.ruijia.qrcode.QrApplication;
 import com.ruijia.qrcode.QrProgressCallback;
 import com.ruijia.qrcode.listener.OnServiceAndActListener;
+import com.ruijia.qrcode.module.MyData;
 import com.ruijia.qrcode.utils.BitmapCacheUtils;
+import com.ruijia.qrcode.utils.CacheUtils;
 import com.ruijia.qrcode.utils.CheckUtils;
 import com.ruijia.qrcode.utils.CodeUtils;
 import com.ruijia.qrcode.utils.ConvertUtils;
 import com.ruijia.qrcode.utils.IOUtils;
 import com.ruijia.qrcode.utils.SPUtil;
+import com.ruijia.qrcode.utils.ViewUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -154,7 +158,8 @@ public class QRXmitService extends Service {
         Log.d("SJY", "QRXmitService--QrSend-localPath=" + localPath);
         //
         clearLastData();
-        //
+        //准备发送二维码所需的常量图
+        initCreateBitmap();
         //判断文件是否存在
         File file = new File(localPath);
         if (file == null || !file.exists()) {
@@ -191,6 +196,44 @@ public class QRXmitService extends Service {
         if (bitmapFile.exists() && bitmapFile.isFile()) {
             bitmapFile.delete();
         }
+    }
+
+    /**
+     *
+     */
+    private void initCreateBitmap() {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                //接收端标记图
+                //01
+                if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_init) == null) {
+                    Bitmap recv_init_bitmap = CodeUtils.createByMultiFormatWriter(Constants.recv_init, Constants.qrBitmapSize);
+                    //保存在缓存中
+                    CacheUtils.getInstance().put(Constants.flag_recv_init, recv_init_bitmap);
+                    CacheUtils.getInstance().put(Constants.flag_recv_init_length, ViewUtils.getImageViewWidth(Constants.recv_init.length()));
+                }
+                //02
+                if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_success) == null) {
+                    Bitmap save_success_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.SUCCESS, Constants.qrBitmapSize);
+                    //保存在缓存中
+                    CacheUtils.getInstance().put(Constants.flag_recv_success, save_success_bitmap);
+                    CacheUtils.getInstance().put(Constants.flag_recv_success_length, ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.SUCCESS).length()));
+                }
+                //03
+                if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_failed) == null) {
+                    Bitmap save_failed_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.FAILED, Constants.qrBitmapSize);
+                    //保存在缓存中
+                    CacheUtils.getInstance().put(Constants.flag_recv_success, save_failed_bitmap);
+                    CacheUtils.getInstance().put(Constants.flag_recv_success_length, ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length()));
+                }
+
+                // 发送端标记图
+                //04
+
+            }
+        });
     }
 
 
@@ -379,7 +422,50 @@ public class QRXmitService extends Service {
             @Override
             protected Boolean doInBackground(Void... voids) {
                 try {
-                    //
+                    /**
+                     * 标记图
+                     */
+                    //接收端标记图
+                    //01
+                    if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_init) == null) {
+                        Bitmap recv_init_bitmap = CodeUtils.createByMultiFormatWriter(Constants.recv_init, Constants.qrBitmapSize);
+                        //保存在缓存中
+                        CacheUtils.getInstance().put(Constants.flag_recv_init, recv_init_bitmap);
+                        CacheUtils.getInstance().put(Constants.flag_recv_init_length, ViewUtils.getImageViewWidth(Constants.recv_init.length()));
+                    }
+                    //02
+                    if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_success) == null) {
+                        Bitmap save_success_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.SUCCESS, Constants.qrBitmapSize);
+                        //保存在缓存中
+                        CacheUtils.getInstance().put(Constants.flag_recv_success, save_success_bitmap);
+                        CacheUtils.getInstance().put(Constants.flag_recv_success_length, ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.SUCCESS).length()));
+                    }
+                    //03
+                    if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_failed) == null) {
+                        Bitmap save_failed_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.FAILED, Constants.qrBitmapSize);
+                        //保存在缓存中
+                        CacheUtils.getInstance().put(Constants.flag_recv_failed, save_failed_bitmap);
+                        CacheUtils.getInstance().put(Constants.flag_recv_failed_length, ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length()));
+                    }
+                    //发送端标记图 selectPath, newDatas, fileSize
+                    //04
+                    String sizeStr = null;
+                    String sendover = null;
+                    try {
+                        sizeStr = ConvertUtils.long2String(fileSize);
+                        sendover = Constants.sendOver_Contnet + selectPath + sizeStr;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "标记转换异常--ConvertUtils.int2String()" + e.toString());
+                    }
+                    Bitmap save_send_bitmap = CodeUtils.createByMultiFormatWriter(sendover, Constants.qrBitmapSize);
+                    //保存在缓存中
+                    CacheUtils.getInstance().put(Constants.flag_send_over, save_send_bitmap);
+                    CacheUtils.getInstance().put(Constants.flag_send_over_length, ViewUtils.getImageViewWidth(sendover.length()));
+
+                    /**
+                     * 内容片段
+                     */
                     long startTime = System.currentTimeMillis();
                     //sendDatas 转qrbitmap
                     for (int i = 0; i < size; i++) {

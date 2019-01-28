@@ -23,6 +23,24 @@ public class Constants {
     public static String send_init = "QrcodeSENDCONNECTQrcodeSENDCONNECT";//发送端 发送连接信息，通知接收端初始化数据
     public static String recv_init = "QrcodeRECVCONNECTQrcodeRECVCONNECT";//接收端 发送连接信息，通知发送端发送数据
 
+    /**
+     * ===================发送端/接收端 通用标记--缓存文件对应的key值=====================
+     */
+    //
+    public static String flag_recv_init = "flag_recv_init";
+    public static String flag_recv_init_length = "flag_recv_init_length";
+    //
+    public static String flag_recv_success = "flag_recv_success";
+    public static String flag_recv_success_length = "flag_recv_success_length";
+    //
+    public static String flag_recv_failed = "flag_recv_failed";
+    public static String flag_recv_failed_length = "flag_recv_failed_length";
+
+     public static String flag_send_over = "flag_send_over";
+    public static String flag_send_over_length = "flag_send_over_length";
+
+
+
     //================================================================================
     //==========================整体流程控制参数设置============================
     //================================================================================
