@@ -56,7 +56,7 @@
         <RelativeLayout
             android:id="@+id/ly_content"
             android:layout_width="match_parent"
-            android:layout_height="1300px"
+            android:layout_height="1400px"
             android:layout_centerInParent="true"
             android:background="#FFFFFF">
             <!--聚焦用，不可删-->
@@ -64,7 +64,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/img_qr"
-                android:layout_marginBottom="10dp"
                 android:gravity="center"
                 android:text="made in China !producer sjy"
                 android:textColor="@android:color/holo_red_dark"
@@ -74,7 +73,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/img_qr"
-                android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="Province ShanDong!my leader qw+cxy"
                 android:textColor="@android:color/holo_green_dark"
@@ -82,8 +80,8 @@
             <!--识别结果-->
             <ImageView
                 android:id="@+id/img_qr"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_width="0px"
+                android:layout_height="0px"
                 android:layout_centerInParent="true" />
 
         </RelativeLayout>
