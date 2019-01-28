@@ -15,6 +15,7 @@ import com.ruijia.qrcode.QrAIDLInterface;
 import com.ruijia.qrcode.QrApplication;
 import com.ruijia.qrcode.QrProgressCallback;
 import com.ruijia.qrcode.listener.OnServiceAndActListener;
+import com.ruijia.qrcode.utils.BitmapCacheUtils;
 import com.ruijia.qrcode.utils.CheckUtils;
 import com.ruijia.qrcode.utils.CodeUtils;
 import com.ruijia.qrcode.utils.ConvertUtils;
@@ -176,7 +177,6 @@ public class QRXmitService extends Service {
     }
 
     /**
-     * TODO  未做
      * <p>
      * 清空处理
      */
@@ -185,6 +185,12 @@ public class QRXmitService extends Service {
         OnServiceAndActListener listener;//
         newDatas = new ArrayList<>();
         size = 0;//当前文件的list长度
+
+        //清空上一次传输的缓存
+        File bitmapFile = new File(Constants.BASE_PATH, Constants.FILE_BITMAP_NAME);
+        if (bitmapFile.exists() && bitmapFile.isFile()) {
+            bitmapFile.delete();
+        }
     }
 
 
@@ -348,12 +354,69 @@ public class QRXmitService extends Service {
                      */
                     newDatas = list;
                     size = newDatas.size();
+                    //生成bitmap
+                    createQrBitmap();
 
-                    //调起链路层传输数据
-                    serviceStartAct();
-
+//                    //调起链路层传输数据
+//                    serviceStartAct();
                 }
 
+            }
+        }.execute();
+    }
+
+    /**
+     * (4)list转qrbitmap，并保存在缓存文件中
+     * 方式1：list大段直接转，耗时长
+     *
+     * <p>
+     */
+    private void createQrBitmap() {
+        Log.e("SJY", "数据准备中...");
+
+        new AsyncTask<Void, Void, Boolean>() {
+
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    //
+                    long startTime = System.currentTimeMillis();
+                    //sendDatas 转qrbitmap
+                    for (int i = 0; i < size; i++) {
+                        //01 生成二维码
+                        long start = System.currentTimeMillis();
+                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), qrSize);
+
+                        long end = System.currentTimeMillis() - start;
+                        createQrImgProgress(size, i, "生成单张二维码耗时=" + end);
+
+                        //02 文件保存二维码
+                        long start2 = System.currentTimeMillis();
+                        BitmapCacheUtils.getInstance().put("" + i, bitmap);
+                        //回调客户端
+                        long end2 = System.currentTimeMillis() - start2;
+                        createQrImgProgress(size, i, "bitmap保存到缓存文件耗时=" + end2);
+                    }
+                    //回调客户端
+                    long time = System.currentTimeMillis() - startTime;
+                    createQrImgTime(time, "生成二维码总耗时=" + time + "ms");
+                    return true;
+                } catch (Exception e) {
+                    Log.d("SJY", e.toString());
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean isSuccess) {
+                super.onPostExecute(isSuccess);
+                if (isSuccess) {
+                    //service与act的交互
+                    //调起链路层传输数据
+                    serviceStartAct();
+                } else {
+                    isTrans(false, "生成二维码或保存文件出错，请重新发送文件");
+                }
             }
         }.execute();
     }

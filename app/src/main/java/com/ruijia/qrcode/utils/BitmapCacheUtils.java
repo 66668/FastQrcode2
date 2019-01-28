@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -38,100 +37,100 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 通用文件缓存
+ * 文件缓存，专门用于缓存片段bitmap，每次缓存文件前，需要清除
  */
-public final class CacheUtils {
+public final class BitmapCacheUtils {
 
     private static final long DEFAULT_MAX_SIZE = Long.MAX_VALUE;
     private static final int DEFAULT_MAX_COUNT = Integer.MAX_VALUE;
 
-    private static final SimpleArrayMap<String, CacheUtils> CACHE_MAP = new SimpleArrayMap<String, CacheUtils>();
+    private static final SimpleArrayMap<String, BitmapCacheUtils> CACHE_MAP = new SimpleArrayMap<String, BitmapCacheUtils>();
     private final String mCacheKey;
     private final DiskCacheManager mDiskCacheManager;
 
     /**
-     * Return the single {@link CacheUtils} instance.
+     * Return the single {@link BitmapCacheUtils} instance.
      * <p>cache directory: /data/data/package/cache/cacheUtils</p>
      * <p>cache size: unlimited</p>
      * <p>cache count: unlimited</p>
      *
-     * @return the single {@link CacheUtils} instance
+     * @return the single {@link BitmapCacheUtils} instance
      */
-    public static CacheUtils getInstance() {
+    public static BitmapCacheUtils getInstance() {
         return getInstance("", DEFAULT_MAX_SIZE, DEFAULT_MAX_COUNT);
     }
 
     /**
-     * Return the single {@link CacheUtils} instance.
+     * Return the single {@link BitmapCacheUtils} instance.
      * <p>cache directory: /data/data/package/cache/cacheUtils</p>
      * <p>cache size: unlimited</p>
      * <p>cache count: unlimited</p>
      *
      * @param cacheName The name of cache.
-     * @return the single {@link CacheUtils} instance
+     * @return the single {@link BitmapCacheUtils} instance
      */
-    public static CacheUtils getInstance(final String cacheName) {
+    public static BitmapCacheUtils getInstance(final String cacheName) {
         return getInstance(cacheName, DEFAULT_MAX_SIZE, DEFAULT_MAX_COUNT);
     }
 
     /**
-     * Return the single {@link CacheUtils} instance.
+     * Return the single {@link BitmapCacheUtils} instance.
      * <p>cache directory: /data/data/package/cache/cacheUtils</p>
      *
      * @param maxSize  The max size of cache, in bytes.
      * @param maxCount The max count of cache.
-     * @return the single {@link CacheUtils} instance
+     * @return the single {@link BitmapCacheUtils} instance
      */
-    public static CacheUtils getInstance(final long maxSize, final int maxCount) {
+    public static BitmapCacheUtils getInstance(final long maxSize, final int maxCount) {
         return getInstance("", maxSize, maxCount);
     }
 
     /**
      * 设置缓存路径
-     * Return the single {@link CacheUtils} instance.
+     * Return the single {@link BitmapCacheUtils} instance.
      */
-    public static CacheUtils getInstance(String cacheName, final long maxSize, final int maxCount) {
-        if (isSpace(cacheName)) cacheName = Constants.FILE_COMMON_NAME;
+    public static BitmapCacheUtils getInstance(String cacheName, final long maxSize, final int maxCount) {
+        if (isSpace(cacheName)) cacheName = Constants.FILE_BITMAP_NAME;
         File file = new File(Constants.BASE_PATH, cacheName);
         return getInstance(file, maxSize, maxCount);
     }
 
     /**
-     * Return the single {@link CacheUtils} instance.
+     * Return the single {@link BitmapCacheUtils} instance.
      * <p>cache size: unlimited</p>
      * <p>cache count: unlimited</p>
      *
      * @param cacheDir The directory of cache.
-     * @return the single {@link CacheUtils} instance
+     * @return the single {@link BitmapCacheUtils} instance
      */
-    public static CacheUtils getInstance(@NonNull final File cacheDir) {
+    public static BitmapCacheUtils getInstance(@NonNull final File cacheDir) {
         return getInstance(cacheDir, DEFAULT_MAX_SIZE, DEFAULT_MAX_COUNT);
     }
 
     /**
-     * Return the single {@link CacheUtils} instance.
+     * Return the single {@link BitmapCacheUtils} instance.
      *
      * @param cacheDir The directory of cache.
      * @param maxSize  The max size of cache, in bytes.
      * @param maxCount The max count of cache.
-     * @return the single {@link CacheUtils} instance
+     * @return the single {@link BitmapCacheUtils} instance
      */
-    public static CacheUtils getInstance(@NonNull final File cacheDir,
-                                         final long maxSize,
-                                         final int maxCount) {
+    public static BitmapCacheUtils getInstance(@NonNull final File cacheDir,
+                                               final long maxSize,
+                                               final int maxCount) {
         final String cacheKey = cacheDir.getAbsoluteFile() + "_" + maxSize + "_" + maxCount;
-        CacheUtils cache = CACHE_MAP.get(cacheKey);
+        BitmapCacheUtils cache = CACHE_MAP.get(cacheKey);
         if (cache == null) {
             if (!cacheDir.exists() && !cacheDir.mkdirs()) {
                 throw new RuntimeException("can't make dirs in " + cacheDir.getAbsolutePath());
             }
-            cache = new CacheUtils(cacheKey, new DiskCacheManager(cacheDir, maxSize, maxCount));
+            cache = new BitmapCacheUtils(cacheKey, new DiskCacheManager(cacheDir, maxSize, maxCount));
             CACHE_MAP.put(cacheKey, cache);
         }
         return cache;
     }
 
-    private CacheUtils(final String cacheKey, final DiskCacheManager cacheManager) {
+    private BitmapCacheUtils(final String cacheKey, final DiskCacheManager cacheManager) {
         mCacheKey = cacheKey;
         mDiskCacheManager = cacheManager;
     }

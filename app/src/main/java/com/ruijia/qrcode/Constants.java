@@ -1,9 +1,15 @@
 package com.ruijia.qrcode;
 
+import android.os.Environment;
+
 /**
  * 原生摄像头的常量池
  */
 public class Constants {
+
+    public static String BASE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/qrcode_cache";
+    public static String FILE_BITMAP_NAME = "qrcode_bitmap";
+    public static String FILE_COMMON_NAME = "qrcode";
     /**
      * ===================发送端/接收端 通用标记=====================
      */
@@ -103,3 +109,4 @@ public class Constants {
 
 
 }
+
