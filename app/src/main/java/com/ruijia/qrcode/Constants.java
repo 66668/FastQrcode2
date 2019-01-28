@@ -21,7 +21,7 @@ public class Constants {
     //==========================整体流程控制参数设置============================
     //================================================================================
 
-    public static final int FOCUS_TIME = 2500;//摄像头聚焦间隔（使二维码更好识别的暴力方式） ms
+    public static final int FOCUS_TIME = 1800;//摄像头聚焦间隔（使二维码更好识别的暴力方式） ms
 
     public static final int TIMEOUT = 20;//连接超时 次数
 
@@ -48,7 +48,7 @@ public class Constants {
      * 小米5s的最低间隔是130，400～500的间隔数据能完全传输。
      * 所以在130～400之间找最低值且保证速率
      */
-    public static final int DEFAULT_TIME = 190;//关键
+    public static final int DEFAULT_TIME = 200;//关键
 
     /**
      * 最大文件大小 默认3M

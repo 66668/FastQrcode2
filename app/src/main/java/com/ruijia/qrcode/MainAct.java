@@ -219,10 +219,10 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         //发送端：接收端发送初始化信息，发送端接收后发送数据
         if (resultStr.contains(Constants.recv_init)) {
             if (!isSending) {
-                //第一次发送数据
-                startSend();
                 //第一次发送结束后，设置为false
                 isSending = true;
+                //第一次发送数据
+                startSend();
             }
 
         }
@@ -428,7 +428,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
     }
 
     /**
-     * 接收端：清空数据
+     * 接收端：（接收完成）清空数据
      * <p>
      * 由于设置了最后一张多显示ns,所以清空数据也延迟ns执行，避免bug
      */
@@ -461,6 +461,41 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                 });
             }
         }, 0, Constants.RECV_FLAG_TIME);
+    }
+
+    /**
+     * 接收端+发送端：（传输中）关闭显示
+     * <p>
+     * 由于设置了最后一张多显示ns,所以清空数据也延迟ns执行，避免bug
+     */
+
+    private void clearShowDelay() {
+        showTimerCount = 0;
+        if (showTimer != null) {
+            showTimer.cancel();
+            showTimer = null;
+        }
+        showTimer = new Timer();
+        showTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //终止倒计时
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (showTimerCount < 2) {
+                            showTimerCount++;
+                        } else {
+                            clearImageView();
+                            if (showTimer != null) {
+                                showTimer.cancel();
+                                showTimer = null;
+                            }
+                        }
+                    }
+                });
+            }
+        }, 0, Constants.RECV_FLAG_TIME * 2);
     }
 
     /**
@@ -521,6 +556,11 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
             timeoutCount = 0;
             handler.removeCallbacks(initRecvTimeoutTask);
             handler.post(initRecvTimeoutTask);
+
+            //
+            //开启聚焦任务
+            handler.removeCallbacks(focusTask);
+            handler.postDelayed(focusTask, 500);
         }
     }
 
@@ -530,20 +570,21 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
      * <p>
      * 用途：将实时扫描的片段保存到hashMap中，等待标记处理该数据即可
      */
-    private void RecvTerminalScan(final long startTime, String startTags, String endTags, final String recvStr) {
+    private void RecvTerminalScan(final long startTime, final String startTags, String endTags, final String recvStr) {
 
         String[] flagArray = startTags.split("d");
         //继续排除乱码
         if ((flagArray.length != 2) || (!endTags.equals(Constants.endTag))) {
             return;
         }
-        //处理片段位置标记
-        final String posStr = startTags.substring(3, 10);
-        final int pos = Integer.parseInt(posStr);//位置 "0001234"-->1234
         //扔到handler的异步中处理
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                //处理片段位置标记
+                final String posStr = startTags.substring(3, 10);
+                final int pos = Integer.parseInt(posStr);//位置 "0001234"-->1234
+
                 vibrate();  //震动
                 Log.d(QR_TAG, "接收端保存数据:posStr=" + posStr + "--pos=" + pos + "--recvStr.length()=" + recvStr.length());
                 receveContentMap.put(pos, recvStr);//map暂时保存数据
@@ -716,6 +757,9 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                             if (isSave) {
                                 Log.d(QR_TAG, "接收端：数据没有缺失--反馈");
                                 showRecvBitmap(Constants.receiveOver_Content + Constants.SUCCESS, Constants.RECV_FLAG_TIME * 3);
+                                // 开启聚焦
+                                handler.removeCallbacks(focusTask);
+                                handler.postDelayed(focusTask, 500);
                             } else {
                                 Log.d(QR_TAG, "接收端：数据完有缺失--反馈");
                                 showRecvBitmap(Constants.receiveOver_Content + Constants.FAILED, Constants.RECV_FLAG_TIME * 3);
@@ -726,30 +770,36 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                                 timer = null;
                             }
                             return;
-                        }
-
-                        //有缺失发送(大部分是size=1的情况)
-                        if (recvCounts < feedBackDatas.size()) {
+                        } else { //有缺失发送(大部分是size=1的情况)
                             Log.d(TAG, "接收端：数据有缺失");
                             try {
                                 //TODO 有100ms的耗时 可忽略
-                                String contents = feedBackDatas.get(recvCounts);
-                                setImageViewWidth(contents.length());//01
-                                Bitmap btmap = CodeUtils.createByMultiFormatWriter(contents, Constants.qrBitmapSize);
-                                img_result.setImageBitmap(btmap);//02
+                                if (recvCounts < feedBackDatas.size()) {
+                                    String contents = feedBackDatas.get(recvCounts);
+                                    setImageViewWidth(contents.length());//01
+                                    Bitmap btmap = CodeUtils.createByMultiFormatWriter(contents, Constants.qrBitmapSize);
+                                    img_result.setImageBitmap(btmap);//02
+                                    recvCounts++;
 
-                                recvCounts++;
+                                } else {
+                                    //
+                                    if (timer != null) {
+                                        timer.cancel();
+                                        timer = null;
+                                    }
+                                    //倒计时关闭显示
+                                    clearShowDelay();
+                                    // 开启聚焦
+                                    handler.removeCallbacks(focusTask);
+                                    handler.postDelayed(focusTask, 500);
+                                }
+
                             } catch (Exception e) {
                                 Log.e(TAG, "error=" + e.toString());
                                 if (timer != null) {
                                     timer.cancel();
                                     timer = null;
                                 }
-                            }
-                        } else {
-                            if (timer != null) {
-                                timer.cancel();
-                                timer = null;
                             }
                         }
                     }
@@ -1153,7 +1203,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                     @Override
                     public void run() {
                         //回调:发送间隔，用于计算识别速度，也用于鉴别 发送间隔是否标准
-                        myService.sendAidlQrUnitTime((System.currentTimeMillis() - handler_lastTime), sendDatas.size(), sendCounts, "firstSend--发送间隔=" + time);
+                        myService.sendAidlQrUnitTime((System.currentTimeMillis() - lastSaveTime), sendDatas.size(), sendCounts, "firstSend--发送间隔=" + time);
 
                         if (sendCounts < sendDatas.size()) {//发送二维码
                             if (firstSendQueue.size() <= 0) {
@@ -1174,6 +1224,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                                 initFirstSendProducerTask();
                             }
                         } else {//最后一次数据 结束符号
+
                             //查看不同计数获得的原始数据是否相同
                             if (sendDatas.size() != sendMaps.size()) {
                                 myService.isTrans(false, "原始数据错误，代码需要优化或重新开始传输");
@@ -1203,12 +1254,14 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                                     timer = null;
                                 }
                             }
+                            //开启聚焦任务
+                            handler.removeCallbacks(focusTask);
+                            handler.postDelayed(focusTask, 500);
                         }
 
-                        handler_lastTime = System.currentTimeMillis();
+                        lastSaveTime = System.currentTimeMillis();
                     }
                 });
-                lastSaveTime = System.currentTimeMillis();
 
             }
         }, 100, Constants.DEFAULT_TIME);
@@ -1290,6 +1343,9 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                                 timer = null;
                             }
 
+                            //开启聚焦任务
+                            handler.removeCallbacks(focusTask);
+                            handler.postDelayed(focusTask, 500);
                         }
 
                     }
@@ -1605,20 +1661,27 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
      */
     private void setImageViewWidth(int contentSize) {
         ViewGroup.LayoutParams lp = img_result.getLayoutParams();
-
         int width = 1000;
         if (contentSize >= 1000) {
             width = 1000;
         } else if (contentSize > 600) {
+            width = 900;
+        } else if (contentSize > 500) {
             width = 800;
+        } else if (contentSize > 450) {
+            width = 750;
         } else if (contentSize > 300) {
-            width = 650;
+            width = 670;
+        } else if (contentSize > 150) {
+            width = 600;
         } else if (contentSize > 100) {
             width = 550;
         } else if (contentSize > 50) {
             width = 500;
-        } else {
+        } else if (contentSize > 30) {
             width = 450;
+        } else {
+            width = 400;
         }
         if (lp.width == width) {
             return;
@@ -1636,17 +1699,24 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         if (contentSize >= 1000) {
             return 1000;
         } else if (contentSize > 600) {
+            return 900;
+        } else if (contentSize > 500) {
             return 800;
+        } else if (contentSize > 450) {
+            return 750;
         } else if (contentSize > 300) {
-            return 650;
+            return 670;
+        } else if (contentSize > 150) {
+            return 600;
         } else if (contentSize > 100) {
-            return 500;
+            return 550;
         } else if (contentSize > 50) {
+            return 500;
+        } else if (contentSize > 30) {
             return 450;
         } else {
             return 400;
         }
-
     }
 
 
