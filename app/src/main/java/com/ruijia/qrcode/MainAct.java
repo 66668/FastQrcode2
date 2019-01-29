@@ -149,9 +149,6 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
 
     //====第一次发送-生产者参数====
     //
-    private static final int MAX_QR_COUNT = 100;//最大二维码数量
-    private static final int MIN_QR_COUNT = 20;//最小二维码数量
-    //
     private boolean isFirstProducerExit = false;//是否退出
     private int firstProducerPos = 0;//生产者标记生成bitmap的位置
 
@@ -1207,7 +1204,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                             sendCounts++;
 
                             //低于最低数量再生成
-                            if (firstSendQueue.size() < MIN_QR_COUNT) {
+                            if (firstSendQueue.size() < Constants.MIN_QR_COUNT) {
                                 initFirstSendProducerTask();
                             }
                         } else {//最后一次数据 结束符号
@@ -1605,8 +1602,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
      */
 
     /**
-     * TODO 会不停创建runnable,需要优化
-     * 第一次发送的生产者
+     * 第一次发送的生产者(每次耗时)
      * 任务：
      * 1 创建发送标记bitmap
      * 2 创建发送数据（边生产边发送）
@@ -1627,7 +1623,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                     //创建发送数据
                     while (!isFirstProducerExit &&
                             firstProducerPos < sendSize
-                            && firstSendQueue.size() < MAX_QR_COUNT) {
+                            && firstSendQueue.size() < Constants.MAX_QR_COUNT) {
 
                         long time = System.currentTimeMillis();
                         //取缓存

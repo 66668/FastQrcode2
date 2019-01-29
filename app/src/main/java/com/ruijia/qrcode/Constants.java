@@ -60,6 +60,10 @@ public class Constants {
 
     public static final int RECV_FLAG_TIME = 5000;//接收端：最后一张图显示时间 ms
 
+    public static final int MAX_QR_COUNT = 60;//链路线程池中最大二维码数量
+
+    public static final int MIN_QR_COUNT = 10;//链路线程池中最小二维码数量
+
     /**
      * 发送时间间隔
      * <p>
