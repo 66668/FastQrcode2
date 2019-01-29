@@ -53,6 +53,8 @@ public class QRXmitService extends Service {
     private OnServiceAndActListener listener;//
     private List<String> newDatas = new ArrayList<>();
     private int size = 0;//当前文件的list长度
+    private boolean isSuccess_1;//线程1执行完
+    private boolean isSuccess_2;//线程2执行完
     private long fileSize = 0;//文件大小
 
 
@@ -397,8 +399,14 @@ public class QRXmitService extends Service {
                      */
                     newDatas = list;
                     size = newDatas.size();
+                    int count_1 = size / 2;
+                    int count_2 = size - count_1;
                     //生成bitmap
-                    createQrBitmap();
+                    createFlagTask();
+                    isSuccess_1 = false;
+                    isSuccess_2 = false;
+                    createQrBitmap_1(count_1);
+                    createQrBitmap_2(count_2);
 
 //                    //调起链路层传输数据
 //                    serviceStartAct();
@@ -409,67 +417,85 @@ public class QRXmitService extends Service {
     }
 
     /**
-     * (4)list转qrbitmap，并保存在缓存文件中
-     * 方式1：list大段直接转，耗时长
-     *
-     * <p>
+     * 异步生成
      */
-    private void createQrBitmap() {
-        Log.e("SJY", "数据准备中...");
-        final long myTime = System.currentTimeMillis();
+    private void createFlagTask() {
         new AsyncTask<Void, Void, Boolean>() {
 
             @Override
             protected Boolean doInBackground(Void... voids) {
-                try {
-                    /**
-                     * 标记图
-                     */
-                    //接收端标记图
-                    //01
-                    if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_init) == null) {
-                        Bitmap recv_init_bitmap = CodeUtils.createByMultiFormatWriter(Constants.recv_init, Constants.qrBitmapSize);
-                        //保存在缓存中
-                        CacheUtils.getInstance().put(Constants.flag_recv_init, recv_init_bitmap);
-                        CacheUtils.getInstance().put(Constants.flag_recv_init_length, "" + ViewUtils.getImageViewWidth(Constants.recv_init.length()));
-                    }
-                    //02
-                    if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_success) == null) {
-                        Bitmap save_success_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.SUCCESS, Constants.qrBitmapSize);
-                        //保存在缓存中
-                        CacheUtils.getInstance().put(Constants.flag_recv_success, save_success_bitmap);
-                        CacheUtils.getInstance().put(Constants.flag_recv_success_length, "" + ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.SUCCESS).length()));
-                    }
-                    //03
-                    if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_failed) == null) {
-                        Bitmap save_failed_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.FAILED, Constants.qrBitmapSize);
-                        //保存在缓存中
-                        CacheUtils.getInstance().put(Constants.flag_recv_failed, save_failed_bitmap);
-                        CacheUtils.getInstance().put(Constants.flag_recv_failed_length, "" + ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length()));
-                    }
-
-                    //发送端标记图 规则：QrcodeContentSendOver+filePath+七位的总片段数size
-                    //04
-                    String sizeStr = null;
-                    String sendover = null;
-                    try {
-                        sizeStr = ConvertUtils.int2String(newDatas.size());
-                        sendover = Constants.sendOver_Contnet + selectPath + sizeStr;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e(TAG, "标记转换异常--ConvertUtils.int2String()" + e.toString());
-                    }
-                    Bitmap save_send_bitmap = CodeUtils.createByMultiFormatWriter(sendover, Constants.qrBitmapSize);
+                /**
+                 * 标记图
+                 */
+                //接收端标记图
+                //01
+                if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_init) == null) {
+                    Bitmap recv_init_bitmap = CodeUtils.createByMultiFormatWriter(Constants.recv_init, Constants.qrBitmapSize);
                     //保存在缓存中
-                    CacheUtils.getInstance().put(Constants.flag_send_over, save_send_bitmap);
-                    CacheUtils.getInstance().put(Constants.flag_send_over_length, "" + ViewUtils.getImageViewWidth(sendover.length()));
+                    CacheUtils.getInstance().put(Constants.flag_recv_init, recv_init_bitmap);
+                    CacheUtils.getInstance().put(Constants.flag_recv_init_length, "" + ViewUtils.getImageViewWidth(Constants.recv_init.length()));
+                }
+                //02
+                if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_success) == null) {
+                    Bitmap save_success_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.SUCCESS, Constants.qrBitmapSize);
+                    //保存在缓存中
+                    CacheUtils.getInstance().put(Constants.flag_recv_success, save_success_bitmap);
+                    CacheUtils.getInstance().put(Constants.flag_recv_success_length, "" + ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.SUCCESS).length()));
+                }
+                //03
+                if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_failed) == null) {
+                    Bitmap save_failed_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.FAILED, Constants.qrBitmapSize);
+                    //保存在缓存中
+                    CacheUtils.getInstance().put(Constants.flag_recv_failed, save_failed_bitmap);
+                    CacheUtils.getInstance().put(Constants.flag_recv_failed_length, "" + ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length()));
+                }
 
+                //发送端标记图 规则：QrcodeContentSendOver+filePath+七位的总片段数size
+                //04
+                String sizeStr = null;
+                String sendover = null;
+                try {
+                    sizeStr = ConvertUtils.int2String(newDatas.size());
+                    sendover = Constants.sendOver_Contnet + selectPath + sizeStr;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "标记转换异常--ConvertUtils.int2String()" + e.toString());
+                }
+                Bitmap save_send_bitmap = CodeUtils.createByMultiFormatWriter(sendover, Constants.qrBitmapSize);
+                //保存在缓存中
+                CacheUtils.getInstance().put(Constants.flag_send_over, save_send_bitmap);
+                CacheUtils.getInstance().put(Constants.flag_send_over_length, "" + ViewUtils.getImageViewWidth(sendover.length()));
+
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean isSuccess) {
+                super.onPostExecute(isSuccess);
+            }
+        }.execute();
+
+    }
+
+    /**
+     * 正序生成二维码
+     * <p>
+     * (4-1)list转qrbitmap，并保存在缓存文件中
+     * <p>
+     */
+    private void createQrBitmap_1(final int pos) {
+        Log.e("SJY", "数据准备中...");
+        final long myTime = System.currentTimeMillis();
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
                     /**
                      * 内容片段
                      */
                     long startTime = System.currentTimeMillis();
                     //sendDatas 转qrbitmap
-                    for (int i = 0; i < size; i++) {
+                    for (int i = pos; i < size; i++) {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
 
@@ -493,7 +519,7 @@ public class QRXmitService extends Service {
                     createQrImgTime(time, "生成二维码总耗时=" + time + "ms");
                     return true;
                 } catch (Exception e) {
-                    Log.d("SJY", e.toString());
+                    Log.e("SJY", "生成内容片段异常：" + e.toString());
                     return false;
                 }
             }
@@ -502,8 +528,75 @@ public class QRXmitService extends Service {
             protected void onPostExecute(Boolean isSuccess) {
                 super.onPostExecute(isSuccess);
                 long time = System.currentTimeMillis() - myTime;
-                createQrImgTime(time, "文件转二维码且保存至文件总耗时=" + time + "ms");
-                if (isSuccess) {
+                createQrImgTime(time, "文件转二维码且保存至文件总耗时1=" + time + "ms");
+                isSuccess_1 = isSuccess;
+
+                if (isSuccess_1 && isSuccess_2) {
+                    //service与act的交互
+                    //调起链路层传输数据
+                    serviceStartAct();
+                } else {
+                    isTrans(false, "生成二维码或保存文件出错，请重新发送文件");
+                }
+            }
+        }.execute();
+    }
+
+    /**
+     * 倒叙生成二维码
+     * <p>
+     * (4-1)list转qrbitmap，并保存在缓存文件中
+     * <p>
+     */
+    private void createQrBitmap_2(final int pos) {
+        Log.e("SJY", "数据准备中...");
+        final long myTime = System.currentTimeMillis();
+        new AsyncTask<Void, Void, Boolean>() {
+
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    /**
+                     * 内容片段
+                     */
+                    long startTime = System.currentTimeMillis();
+                    //sendDatas 转qrbitmap
+                    for (int i = pos; i >= 0; i--) {
+                        //01 生成二维码
+                        long start = System.currentTimeMillis();
+
+                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), qrSize);
+
+                        long end = System.currentTimeMillis() - start;
+                        createQrImgProgress(size, i, "生成第" + i + "张二维码耗时=" + end);
+
+                        //02 文件保存二维码
+                        long start2 = System.currentTimeMillis();
+                        BitmapCacheUtils.getInstance().put(Constants.key_bitmap + i, bitmap);
+                        long len = newDatas.get(i).length();
+                        BitmapCacheUtils.getInstance().put(Constants.key_len + i, ("" + len));
+
+                        //回调客户端
+                        long end2 = System.currentTimeMillis() - start2;
+                        createQrImgProgress(size, i, "bitmap保存到缓存文件耗时=" + end2);
+                    }
+                    //回调客户端
+                    long time = System.currentTimeMillis() - startTime;
+                    createQrImgTime(time, "生成二维码总耗时=" + time + "ms");
+                    return true;
+                } catch (Exception e) {
+                    Log.e("SJY", "生成内容片段异常：" + e.toString());
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean isSuccess) {
+                super.onPostExecute(isSuccess);
+                long time = System.currentTimeMillis() - myTime;
+                createQrImgTime(time, "文件转二维码且保存至文件总耗时2=" + time + "ms");
+                isSuccess_2 = isSuccess;
+                if (isSuccess_1 && isSuccess_2) {
                     //service与act的交互
                     //调起链路层传输数据
                     serviceStartAct();

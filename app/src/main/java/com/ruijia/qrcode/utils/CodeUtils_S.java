@@ -4,21 +4,21 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.google.myzxing.BarcodeFormat_S;
+import com.google.myzxing.EncodeHintType_S;
+import com.google.myzxing.MultiFormatWriter_S;
+import com.google.myzxing.common.BitMatrix_S;
+import com.google.myzxing.qrcode.QRCodeWriter_S;
+import com.google.myzxing.qrcode.decoder.ErrorCorrectionLevel_S;
 import com.ruijia.qrcode.Constants;
 
 import java.util.Hashtable;
 
 /**
- * 本地zxing库：lib_zxing_core 生成二维码的工具类
- * 说明：本app使用了双zing库用于生成二维码图片，该工具类对应的本地库是：lib_zxing_core
+ * 本地zxing库：lib_my_zxing 生成二维码的工具类,
+ * 说明：本app使用了双zing库用于生成二维码图片，该工具类对应的本地库是：lib_my_zxing
  */
-public class CodeUtils {
+public class CodeUtils_S {
 
     /**
      * MultiFormatWriter 类
@@ -31,9 +31,9 @@ public class CodeUtils {
         if (content == null || TextUtils.isEmpty(content) || content.length() > Constants.MAX_QR_SIZE) {
             return null;
         }
-        Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
+        Hashtable<EncodeHintType_S, Object> hints = new Hashtable<EncodeHintType_S, Object>();
         // 指定纠错等级 请参考：https://github.com/66668/FastQrDemo
-        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+        hints.put(EncodeHintType_S.ERROR_CORRECTION, ErrorCorrectionLevel_S.L);
         /**
          *
          *
@@ -47,10 +47,10 @@ public class CodeUtils {
          */
 
         // 指定编码格式
-        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        hints.put(EncodeHintType_S.CHARACTER_SET, "UTF-8");
 //        hints.put(EncodeHintType.MARGIN, 0);   //设置白边
         try {
-            BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints);
+            BitMatrix_S matrix = new MultiFormatWriter_S().encode(content, BarcodeFormat_S.QR_CODE, size, size, hints);
             int[] pixels = new int[size * size];
             for (int y = 0; y < size; y++) {
                 for (int x = 0; x < size; x++) {
@@ -85,14 +85,14 @@ public class CodeUtils {
         if (content == null || TextUtils.isEmpty(content) || content.length() > Constants.MAX_QR_SIZE) {
             return null;
         }
-        Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
+        Hashtable<EncodeHintType_S, Object> hints = new Hashtable<EncodeHintType_S, Object>();
         // 指定纠错等级 请参考：https://github.com/66668/FastQrDemo
-        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+        hints.put(EncodeHintType_S.ERROR_CORRECTION, ErrorCorrectionLevel_S.L);
         // 指定编码格式
-        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        hints.put(EncodeHintType_S.CHARACTER_SET, "UTF-8");
 //        hints.put(EncodeHintType.MARGIN, 0);   //设置白边
         try {
-            BitMatrix matrix = new QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints);
+            BitMatrix_S matrix = new QRCodeWriter_S().encode(content, BarcodeFormat_S.QR_CODE, size, size, hints);
             int[] pixels = new int[size * size];
             for (int y = 0; y < size; y++) {
                 for (int x = 0; x < size; x++) {
