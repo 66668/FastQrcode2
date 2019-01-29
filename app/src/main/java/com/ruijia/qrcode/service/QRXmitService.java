@@ -212,21 +212,21 @@ public class QRXmitService extends Service {
                     Bitmap recv_init_bitmap = CodeUtils.createByMultiFormatWriter(Constants.recv_init, Constants.qrBitmapSize);
                     //保存在缓存中
                     CacheUtils.getInstance().put(Constants.flag_recv_init, recv_init_bitmap);
-                    CacheUtils.getInstance().put(Constants.flag_recv_init_length, ViewUtils.getImageViewWidth(Constants.recv_init.length()));
+                    CacheUtils.getInstance().put(Constants.flag_recv_init_length, ""+ViewUtils.getImageViewWidth(Constants.recv_init.length()));
                 }
                 //02
                 if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_success) == null) {
                     Bitmap save_success_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.SUCCESS, Constants.qrBitmapSize);
                     //保存在缓存中
                     CacheUtils.getInstance().put(Constants.flag_recv_success, save_success_bitmap);
-                    CacheUtils.getInstance().put(Constants.flag_recv_success_length, ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.SUCCESS).length()));
+                    CacheUtils.getInstance().put(Constants.flag_recv_success_length, ""+ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.SUCCESS).length()));
                 }
                 //03
                 if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_failed) == null) {
                     Bitmap save_failed_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.FAILED, Constants.qrBitmapSize);
                     //保存在缓存中
                     CacheUtils.getInstance().put(Constants.flag_recv_success, save_failed_bitmap);
-                    CacheUtils.getInstance().put(Constants.flag_recv_success_length, ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length()));
+                    CacheUtils.getInstance().put(Constants.flag_recv_success_length, ""+ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length()));
                 }
 
                 // 发送端标记图
@@ -431,21 +431,21 @@ public class QRXmitService extends Service {
                         Bitmap recv_init_bitmap = CodeUtils.createByMultiFormatWriter(Constants.recv_init, Constants.qrBitmapSize);
                         //保存在缓存中
                         CacheUtils.getInstance().put(Constants.flag_recv_init, recv_init_bitmap);
-                        CacheUtils.getInstance().put(Constants.flag_recv_init_length, ViewUtils.getImageViewWidth(Constants.recv_init.length()));
+                        CacheUtils.getInstance().put(Constants.flag_recv_init_length, ""+ViewUtils.getImageViewWidth(Constants.recv_init.length()));
                     }
                     //02
                     if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_success) == null) {
                         Bitmap save_success_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.SUCCESS, Constants.qrBitmapSize);
                         //保存在缓存中
                         CacheUtils.getInstance().put(Constants.flag_recv_success, save_success_bitmap);
-                        CacheUtils.getInstance().put(Constants.flag_recv_success_length, ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.SUCCESS).length()));
+                        CacheUtils.getInstance().put(Constants.flag_recv_success_length, ""+ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.SUCCESS).length()));
                     }
                     //03
                     if (CacheUtils.getInstance().getBitmap(Constants.flag_recv_failed) == null) {
                         Bitmap save_failed_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.FAILED, Constants.qrBitmapSize);
                         //保存在缓存中
                         CacheUtils.getInstance().put(Constants.flag_recv_failed, save_failed_bitmap);
-                        CacheUtils.getInstance().put(Constants.flag_recv_failed_length, ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length()));
+                        CacheUtils.getInstance().put(Constants.flag_recv_failed_length, ""+ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length()));
                     }
                     //发送端标记图 selectPath, newDatas, fileSize
                     //04
@@ -461,7 +461,7 @@ public class QRXmitService extends Service {
                     Bitmap save_send_bitmap = CodeUtils.createByMultiFormatWriter(sendover, Constants.qrBitmapSize);
                     //保存在缓存中
                     CacheUtils.getInstance().put(Constants.flag_send_over, save_send_bitmap);
-                    CacheUtils.getInstance().put(Constants.flag_send_over_length, ViewUtils.getImageViewWidth(sendover.length()));
+                    CacheUtils.getInstance().put(Constants.flag_send_over_length, ""+ViewUtils.getImageViewWidth(sendover.length()));
 
                     /**
                      * 内容片段

@@ -1377,31 +1377,6 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         setContentView(R.layout.act_main);
         initView();
 
-        //缓存获取标记
-        if (executorService != null) {
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    if (flag_recv_init == null) {//取缓存
-                        Bitmap recv_init_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_init);
-                        String len = CacheUtils.getInstance().getString(Constants.flag_recv_init_length);
-                        flag_recv_init = new MyData(recv_init_bitmap, Integer.parseInt(len), -1);
-                    }
-                    //02
-                    if (flag_recv_success == null) {//取缓存
-                        Bitmap save_success_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_success);
-                        String len = CacheUtils.getInstance().getString(Constants.flag_recv_success_length);
-                        flag_recv_success = new MyData(save_success_bitmap, Integer.parseInt(len), -1);
-                    }
-                    //03
-                    if (flag_recv_failed == null) {//取缓存
-                        Bitmap save_failed_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_failed);
-                        String len = CacheUtils.getInstance().getString(Constants.flag_recv_failed_length);
-                        flag_recv_failed = new MyData(save_failed_bitmap, Integer.parseInt(len), -1);
-                    }
-                }
-            });
-        }
         //默认初始化为 接收端
         initRecvParams();
         initSendParams();
@@ -1492,6 +1467,44 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         }
         //
         mZBarView.setMyFoucus();
+
+        /**缓存获取标记
+         *初次登陆没有走service，数据仍为空，启动service走该方法，数据才有
+         */
+        if (executorService != null) {
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (flag_recv_init == null) {//取缓存
+                        Bitmap recv_init_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_init);
+                        if (recv_init_bitmap == null) {
+                            return;
+                        }
+                        String len = CacheUtils.getInstance().getString(Constants.flag_recv_init_length);
+                        Log.d(TAG, "onResume--flag_recv_init--len=" + len);
+                        flag_recv_init = new MyData(recv_init_bitmap, Integer.parseInt(len), -1);
+                    }
+                    //02
+                    if (flag_recv_success == null) {//取缓存
+                        Bitmap save_success_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_success);
+                        if (flag_recv_success == null) {
+                            return;
+                        }
+                        String len = CacheUtils.getInstance().getString(Constants.flag_recv_success_length);
+                        flag_recv_success = new MyData(save_success_bitmap, Integer.parseInt(len), -1);
+                    }
+                    //03
+                    if (flag_recv_failed == null) {//取缓存
+                        Bitmap save_failed_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_failed);
+                        if (flag_recv_failed == null) {//
+                            return;
+                        }
+                        String len = CacheUtils.getInstance().getString(Constants.flag_recv_failed_length);
+                        flag_recv_failed = new MyData(save_failed_bitmap, Integer.parseInt(len), -1);
+                    }
+                }
+            });
+        }
     }
 
     @Override
