@@ -50,3 +50,8 @@
 ### 关于聚焦的改进方案：
 1. 只要使用ImageView显示二维码，必须设置ImageView的显示尺寸。
 2. 只要显示结束，或者 img_result.setImageBitmap(null)操作，则ImageView尺寸必须归零，用于摄像头聚焦文字，方便聚焦
+
+
+##bug 解决：
+1. android.app.ServiceConnectionLeaked
+这是act和service调用时，代码不严谨导致的，当act销毁时，必须解绑service,否则就会报错。在onDestroy中添加unbindService(conn)即可
