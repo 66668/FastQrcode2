@@ -161,7 +161,8 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
     private StringBuffer feedBackBuffer = new StringBuffer();  //统计结果
     private List<String> feedBackDatas = new ArrayList<>();//接收端处理结果，反馈list
     private String recvFlePath;//接收端 文件路径
-    private int receveSize = 0;//接收端 标记 总数据长度
+    private int receveFileSize = 0;//接收端 标记 总数据长度
+    private int receve = 0;//接收端 标记 总数据长度
     private int recvCounts = 0;//发送次数统计，handler发送使用
 
 //============================================预览聚焦=====================================================
@@ -372,7 +373,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         feedBackBuffer = new StringBuffer();  //统计结果
         feedBackDatas = new ArrayList<String>();//接收端处理结果，反馈list
         recvFlePath = null;//接收端 文件路径
-        receveSize = 0;//接收端 标记 总数据长度
+        receveFileSize = 0;//接收端 标记 总数据长度
         recvCounts = 0;//发送次数统计，handler发送使用
 
     }
@@ -393,7 +394,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         feedBackBuffer = new StringBuffer();  //统计结果
         feedBackDatas = new ArrayList<>();//接收端处理结果，反馈list
         recvFlePath = null;//接收端 文件路径
-        receveSize = 0;//接收端 标记 总数据长度
+        receveFileSize = 0;//接收端 标记 总数据长度
         recvCounts = 0;//发送次数统计，handler发送使用
         //
         clearImageView();
@@ -594,10 +595,10 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         //提取结束端信息：路径+数据长度，用于判断接收端数据是否接收全，否则就通知发送端再次发送缺失数据。
         String pathAndPos = resultStr.substring(Constants.sendOver_Contnet.length(), resultStr.length());
         String positionStr = pathAndPos.substring((pathAndPos.length() - 7), pathAndPos.length());
-        receveSize = Integer.parseInt(positionStr); //拿到发送端的数据大小
+        receveFileSize = Integer.parseInt(positionStr); //拿到发送端的数据大小
         recvFlePath = pathAndPos.substring(0, (pathAndPos.length() - 7)); //拿到发送端文件类型
 
-        Log.d(QR_TAG, "接收端:发送端单次发送完成，\n 拿到recvFlePath=" + recvFlePath + "--receveSize=" + receveSize);
+        Log.d(QR_TAG, "接收端:发送端单次发送完成，\n 拿到recvFlePath=" + recvFlePath + "--receveFileSize=" + receveFileSize);
 
         //异步：处理是否有缺失文件。
         handler.removeCallbacks(recvTerminalOverTask);
@@ -619,8 +620,8 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
             feedBackDatas = new ArrayList<String>();
             feedBackBuffer = new StringBuffer();
             recvCounts = 0;
-
-            for (int i = 0; i < receveSize; i++) {
+            Log.d(TAG, "recvTerminalOverTask--receveFileSize=" + receveFileSize);
+            for (int i = 0; i < receveFileSize; i++) {
                 //缓存没有对应数据，则缺失
                 if (receveContentMap.get(i) == null || TextUtils.isEmpty(receveContentMap.get(i))) {
                     Log.d(QR_TAG, "缺失=" + i);
@@ -631,7 +632,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
             //数据处理
             if (feedBackFlagList.size() > 0) {//有缺失数据
                 //
-                if (feedBackFlagList.size() == receveSize) {//丢失全部数据
+                if (feedBackFlagList.size() == receveFileSize) {//丢失全部数据
                     Log.d(QR_TAG, "接收端--数据全部缺失:");
                     try {
                         //
@@ -641,7 +642,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                         e.printStackTrace();
                     }
 
-                } else if (feedBackFlagList.size() < receveSize) {//丢失部分数据
+                } else if (feedBackFlagList.size() < receveFileSize) {//丢失部分数据
                     //拼接数据,告诉发送端发送缺失数据
                     Log.d(QR_TAG, "接收端--数据缺失:" + feedBackFlagList.size());
                     //
@@ -797,7 +798,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                     receiveContentDatas = new ArrayList<>();
                     String data = new String();
                     //提取map数据
-                    for (int i = 0; i < receveSize; i++) {
+                    for (int i = 0; i < receveFileSize; i++) {
                         String str = receveContentMap.get(i);
                         data += receveContentMap.get(i);
                         receiveContentDatas.add(str);
