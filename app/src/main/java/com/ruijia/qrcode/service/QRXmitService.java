@@ -416,7 +416,7 @@ public class QRXmitService extends Service {
      */
     private void createQrBitmap() {
         Log.e("SJY", "数据准备中...");
-
+        final long myTime = System.currentTimeMillis();
         new AsyncTask<Void, Void, Boolean>() {
 
             @Override
@@ -501,6 +501,8 @@ public class QRXmitService extends Service {
             @Override
             protected void onPostExecute(Boolean isSuccess) {
                 super.onPostExecute(isSuccess);
+                long time = System.currentTimeMillis() - myTime;
+                createQrImgTime(time, "文件转二维码且保存至文件总耗时=" + time + "ms");
                 if (isSuccess) {
                     //service与act的交互
                     //调起链路层传输数据
