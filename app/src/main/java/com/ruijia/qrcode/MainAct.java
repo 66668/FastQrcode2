@@ -54,6 +54,7 @@ import lib.ruijia.zbar.qrodecontinue.ContinueQRCodeView;
  *
  * @author sjy 2019-01-25
  */
+
 public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
     private static final String SCAN_TAG = "scan";
     private static final String QR_TAG = "qr_sjy";
