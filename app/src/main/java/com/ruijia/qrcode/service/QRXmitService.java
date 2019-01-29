@@ -447,12 +447,13 @@ public class QRXmitService extends Service {
                         CacheUtils.getInstance().put(Constants.flag_recv_failed, save_failed_bitmap);
                         CacheUtils.getInstance().put(Constants.flag_recv_failed_length, "" + ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length()));
                     }
-                    //发送端标记图 selectPath, newDatas, fileSize
+
+                    //发送端标记图 规则：QrcodeContentSendOver+filePath+七位的总片段数size
                     //04
                     String sizeStr = null;
                     String sendover = null;
                     try {
-                        sizeStr = ConvertUtils.long2String(fileSize);
+                        sizeStr = ConvertUtils.int2String(newDatas.size());
                         sendover = Constants.sendOver_Contnet + selectPath + sizeStr;
                     } catch (Exception e) {
                         e.printStackTrace();

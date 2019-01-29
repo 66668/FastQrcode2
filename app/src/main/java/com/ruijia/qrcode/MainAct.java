@@ -1455,43 +1455,9 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         //
         mZBarView.setMyFoucus();
 
-        /**缓存获取标记
-         *初次登陆没有走service，数据仍为空，启动service走该方法，数据才有
-         */
-        if (executorService != null) {
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    if (flag_recv_init == null) {//取缓存
-                        Bitmap recv_init_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_init);
-                        if (recv_init_bitmap == null) {
-                            return;
-                        }
-                        String len = CacheUtils.getInstance().getString(Constants.flag_recv_init_length);
-                        Log.d(TAG, "onResume--flag_recv_init--len=" + len);
-                        flag_recv_init = new MyData(recv_init_bitmap, Integer.parseInt(len), -1);
-                    }
-                    //02
-                    if (flag_recv_success == null) {//取缓存
-                        Bitmap save_success_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_success);
-                        if (flag_recv_success == null) {
-                            return;
-                        }
-                        String len = CacheUtils.getInstance().getString(Constants.flag_recv_success_length);
-                        flag_recv_success = new MyData(save_success_bitmap, Integer.parseInt(len), -1);
-                    }
-                    //03
-                    if (flag_recv_failed == null) {//取缓存
-                        Bitmap save_failed_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_failed);
-                        if (flag_recv_failed == null) {//
-                            return;
-                        }
-                        String len = CacheUtils.getInstance().getString(Constants.flag_recv_failed_length);
-                        flag_recv_failed = new MyData(save_failed_bitmap, Integer.parseInt(len), -1);
-                    }
-                }
-            });
-        }
+        getCacheFlag();
+
+
     }
 
     @Override
@@ -1793,6 +1759,66 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
 
     }
 
+    /**
+     * 缓存获取标记
+     * 发送端：初次登陆没有走service时，缓存为空，启动service保存了缓存走该方法，才能获取标记
+     * 接收端：始终需要自己创建
+     */
+    private void getCacheFlag() {
+
+        if (executorService != null) {
+            executorService.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (flag_recv_init == null) {//取缓存
+                        String len = "";
+                        Bitmap recv_init_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_init);
+                        if (recv_init_bitmap == null) {//创建
+                            recv_init_bitmap = CodeUtils.createByMultiFormatWriter(Constants.recv_init, Constants.qrBitmapSize);
+                            len = "" + ViewUtils.getImageViewWidth(Constants.recv_init.length());
+                            //保存在缓存中
+                            CacheUtils.getInstance().put(Constants.flag_recv_init, recv_init_bitmap);
+                            CacheUtils.getInstance().put(Constants.flag_recv_init_length, len);
+                        } else {//取缓存
+                            len = CacheUtils.getInstance().getString(Constants.flag_recv_init_length);
+                        }
+                        Log.d(TAG, "onResume--flag_recv_init--len=" + len);
+                        flag_recv_init = new MyData(recv_init_bitmap, Integer.parseInt(len), -1);
+                    }
+                    //02
+                    if (flag_recv_success == null) {//取缓存
+                        String len = "";
+                        Bitmap save_success_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_success);
+                        if (flag_recv_success == null) {//创建
+                            save_success_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.SUCCESS, Constants.qrBitmapSize);
+                            len = "" + ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.SUCCESS).length());
+                            //保存在缓存中
+                            CacheUtils.getInstance().put(Constants.flag_recv_success, save_success_bitmap);
+                            CacheUtils.getInstance().put(Constants.flag_recv_success_length, len);
+                        } else {
+                            len = CacheUtils.getInstance().getString(Constants.flag_recv_success_length);
+                        }
+                        flag_recv_success = new MyData(save_success_bitmap, Integer.parseInt(len), -1);
+                    }
+                    //03
+                    if (flag_recv_failed == null) {//取缓存
+                        String len = "";
+                        Bitmap save_failed_bitmap = CacheUtils.getInstance().getBitmap(Constants.flag_recv_failed);
+                        if (flag_recv_failed == null) {////创建
+                            save_failed_bitmap = CodeUtils.createByMultiFormatWriter(Constants.receiveOver_Content + Constants.FAILED, Constants.qrBitmapSize);
+                            len = "" + ViewUtils.getImageViewWidth((Constants.receiveOver_Content + Constants.FAILED).length());
+                            //保存在缓存中
+                            CacheUtils.getInstance().put(Constants.flag_recv_failed, save_failed_bitmap);
+                            CacheUtils.getInstance().put(Constants.flag_recv_failed_length, len);
+                        } else {
+                            len = CacheUtils.getInstance().getString(Constants.flag_recv_failed_length);
+                        }
+                        flag_recv_failed = new MyData(save_failed_bitmap, Integer.parseInt(len), -1);
+                    }
+                }
+            });
+        }
+    }
 
 }
 
