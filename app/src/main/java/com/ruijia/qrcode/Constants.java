@@ -47,7 +47,7 @@ public class Constants {
     public static String key_len = "key_len";
 
     //================================================================================
-    //==========================整体流程控制参数设置============================
+    //==========================流程控制 参数配置============================
     //================================================================================
 
     public static final int FOCUS_TIME = 2000;//摄像头聚焦间隔（使二维码更好识别的暴力方式） ms
@@ -58,7 +58,9 @@ public class Constants {
 
     public static final int SEND_FLAG_TIME = 2500;//发送端：最后一张图显示时间 ms
 
-    public static final int RECV_FLAG_TIME = 5000;//接收端：最后一张图显示时间 ms
+    public static final int RECV_FLAG_TIME = 4000;//接收端：最后一张图显示时间 ms
+
+    public static final int INIT_CONNECT_DELAY = 2000;//延迟连接对端，给线程池准备数据的时间
 
     public static final int MAX_QR_COUNT = 60;//链路线程池中最大二维码数量
 
@@ -102,21 +104,20 @@ public class Constants {
      * <p>
      * 最强性能长度 2935
      */
-    public static final int qrSize = 2930;//
+    public static final int qrSize = 2930;//(保证最大传输，最好不要改)
 
     /**
      * zxing3.3.3库最大string值是2952
      */
     public static final int MAX_QR_SIZE = 2952;//
 
-    public static final int qrBitmapSize = 200;//二维码最大支持的尺寸，默认为200
+    public static final int qrBitmapSize = 200;//二维码最大支持的尺寸，默认为200（越小，二维码图片越模糊）
 
 
     /**
      * 识别过程，最大20次来回传图没有结果，强制结束
      */
     public static final int MAX_SEND_TIMES = 20;
-
 
     /**
      * 最开始的时间

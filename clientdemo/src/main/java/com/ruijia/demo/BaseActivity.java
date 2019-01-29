@@ -186,20 +186,6 @@ public class BaseActivity extends AppCompatActivity {
         unbind();
     }
 
-    //系统gc后保活方案
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.e("SJY", "系统调用了onSaveInstanceState");
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        Log.e("SJY", "系统调用了onRestoreInstanceState");
-    }
-
     //==============================================================================
 
     private void toStartPermission() {

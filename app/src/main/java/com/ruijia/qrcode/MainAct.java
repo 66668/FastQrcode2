@@ -1121,24 +1121,13 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
         //
         //初始化
         timeoutCount = 0;
-        int delayTime = 0;
-        if (sendDatas.size() < 25) {//60kb
-            delayTime = 4000;
-        } else if (sendDatas.size() < 40) {//120kb
-            delayTime = 5500;
-        } else if (sendDatas.size() < 80) {//240KB
-            delayTime = 10000;
-        } else {
-            delayTime = 15000;
-        }
         //回调
-        myService.isTrans(true, "图片准备中，请等待：" + delayTime + "ms");
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 showRecvBitmap(Constants.send_init, Constants.SEND_FLAG_TIME * 3);//不使用showSendBitmap
             }
-        }, delayTime);
+        }, Constants.INIT_CONNECT_DELAY);//
 
         //触发异步
         handler.removeCallbacks(initSendConnectTask);
@@ -1675,7 +1664,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                                 img_result.setImageBitmap(data.bitmap);//02
                                 showTimerCount++;
                             } else {
-                                updateConnectListener();//耗时完成，添加监听(不可少)
+                                updateConnectListener();//发送端耗时完成，添加监听(不可少)
                                 clearImageView();
                                 if (showTimer != null) {
                                     showTimer.cancel();
