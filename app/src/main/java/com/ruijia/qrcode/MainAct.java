@@ -973,7 +973,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                                 if (sendBackList.get(i) == j) {
                                     //取缓存
                                     Bitmap bitmap = BitmapCacheUtils.getInstance().getBitmap(Constants.key_bitmap + j);
-                                    String len = BitmapCacheUtils.getInstance().getString(Constants.key_len);
+                                    String len = BitmapCacheUtils.getInstance().getString(Constants.key_len + j);
                                     MyData myData = new MyData(bitmap, Integer.parseInt(len), j);
                                     maps.add(myData);
                                     break a;
@@ -1032,7 +1032,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                                     if (sendBackList.get(i) == j) {
                                         //取缓存
                                         Bitmap bitmap = BitmapCacheUtils.getInstance().getBitmap(Constants.key_bitmap + j);
-                                        String len = BitmapCacheUtils.getInstance().getString(Constants.key_len);
+                                        String len = BitmapCacheUtils.getInstance().getString(Constants.key_len + j);
                                         MyData myData = new MyData(bitmap, Integer.parseInt(len), j);
                                         maps.add(myData);
                                         break a;
@@ -1632,12 +1632,7 @@ public class MainAct extends BaseAct implements ContinueQRCodeView.Delegate {
                         long time = System.currentTimeMillis();
                         //取缓存
                         Bitmap bitmap = BitmapCacheUtils.getInstance().getBitmap(Constants.key_bitmap + firstProducerPos);
-                        if (bitmap == null) {
-                            myService.isTrans(false, "获取缓存片段失败，请手动结束链路层");
-                            return;
-                        }
-                        String len = CacheUtils.getInstance().getString(Constants.key_len + firstProducerPos);
-                        Log.e(TAG, "缓存片段长度len=" + len);
+                        String len = BitmapCacheUtils.getInstance().getString(Constants.key_len + firstProducerPos);
                         MyData data = new MyData(bitmap, Integer.parseInt(len), firstProducerPos);
                         //保存到队列中
                         firstSendQueue.addFirst(data);
