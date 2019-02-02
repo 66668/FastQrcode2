@@ -20,6 +20,7 @@ import com.ruijia.qrcode.utils.BitmapCacheUtils;
 import com.ruijia.qrcode.utils.CacheUtils;
 import com.ruijia.qrcode.utils.CheckUtils;
 import com.ruijia.qrcode.utils.CodeUtils;
+import com.ruijia.qrcode.utils.CodeUtils_J;
 import com.ruijia.qrcode.utils.CodeUtils_S;
 import com.ruijia.qrcode.utils.ConvertUtils;
 import com.ruijia.qrcode.utils.IOUtils;
@@ -711,7 +712,7 @@ public class QRXmitService extends Service {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_my_zxing库
-                        Bitmap bitmap = CodeUtils_S.createByMultiFormatWriter(newDatas.get(k), qrSize);
+                        Bitmap bitmap = CodeUtils_J.createByMultiFormatWriter(newDatas.get(k), qrSize);
 
                         long end = System.currentTimeMillis() - start;
                         createQrImgProgress(size, k, "线程3--生成第" + k + "张二维码耗时=" + end);
