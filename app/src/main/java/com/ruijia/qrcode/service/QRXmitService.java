@@ -413,29 +413,31 @@ public class QRXmitService extends Service {
                     //3zxing
                     int mcount_1 = size / 3;
                     int mcount_2 = mcount_1 * 2;
-                    Log.e("SJY", "mcount_1=" + mcount_1 + "--mcount_2=" + mcount_2);
                     //4zxing
                     int kcount_1 = size / 4;
                     int kcount_2 = kcount_1 * 2;
                     int kcount_3 = kcount_1 * 3;
-                    Log.e("SJY", "kcount_1=" + kcount_1 + "--kcount_2=" + kcount_2 + "--kcount_3=" + kcount_3);
                     //
                     isSuccess_1 = false;
                     isSuccess_2 = false;
                     isSuccess_3 = false;
                     isSuccess_4 = false;
 
-                    //方式1 单zxing库
-//                    createQrBitmap();
+                    //宗旨：每个线程，最低两个片段
+                    if (size < 3) {//
+                        //方式1 单zxing库
+                        createQrBitmap();
+                    } else if (size < 7) {
+                        //方式2 双zxing库
+                        createQrBitmap2(count_1);
+                    } else if (size < 13) {
+                        //方式3：3个zxing库
+                        createQrBitmap3(mcount_1, mcount_2);
+                    } else {
+                        //方式4：4个zxing库
+                        createQrBitmap4(kcount_1, kcount_2, kcount_3);
+                    }
 
-                    //方式2 双zxing库
-//                    createQrBitmap2(count_1);
-
-                    //方式3：3个zxing库
-//                    createQrBitmap3(mcount_1, mcount_2);
-
-                    //方式4：4个zxing库
-                    createQrBitmap4(kcount_1, kcount_2, kcount_3);
                 }
             }
         }.execute();
@@ -510,7 +512,7 @@ public class QRXmitService extends Service {
      */
     public void createQrBitmap2(final int pos1) {
         Log.e("SJY", "数据准备中...");
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
         long myTime = System.currentTimeMillis();//统计
         List<Future<Boolean>> futures = new ArrayList<Future<Boolean>>(2);
 
@@ -625,7 +627,7 @@ public class QRXmitService extends Service {
      */
     public void createQrBitmap3(final int pos1, final int pos2) {
         Log.e("SJY", "数据准备中...");
-        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        ExecutorService executorService = Executors.newFixedThreadPool(8);
         long myTime = System.currentTimeMillis();//统计
         List<Future<Boolean>> futures = new ArrayList<Future<Boolean>>(3);
 
@@ -783,7 +785,7 @@ public class QRXmitService extends Service {
      */
     public void createQrBitmap4(final int pos1, final int pos2, final int pos3) {
         Log.e("SJY", "数据准备中...");
-        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        ExecutorService executorService = Executors.newFixedThreadPool(8);
         long myTime = System.currentTimeMillis();//统计
         List<Future<Boolean>> futures = new ArrayList<Future<Boolean>>(4);
 
