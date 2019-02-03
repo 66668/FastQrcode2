@@ -15,8 +15,8 @@ import com.ruijia.qrcode.Constants;
 import java.util.Hashtable;
 
 /**
- * 本地zxing库：lib_my_zxing2 生成二维码的工具类,
- * 说明：本app使用了三个zing库用于生成二维码图片，该工具类对应的本地库是：lib_my_zxing2
+ * 本地zxing库：lib_my_zxing3 生成二维码的工具类,
+ * 说明：本app使用了4个zing库用于生成二维码图片，该工具类对应的本地库是：lib_my_zxing3
  */
 public class CodeUtils_Y {
 
