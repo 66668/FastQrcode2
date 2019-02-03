@@ -407,22 +407,25 @@ public class QRXmitService extends Service {
                     //生成flag bitmap
                     createFlagTask();
 
-                    //方式1 单zxing库
-//                    createQrBitmap();
 
                     int count_1 = size / 2;
                     int count_2 = size - count_1;
-
+                    //
+                    int mcount_1 = size / 3;
+                    int mcount_2 = mcount_1 * 2;
+                    //
                     isSuccess_1 = false;
                     isSuccess_2 = false;
                     isSuccess_3 = false;
 
+                    //方式1 单zxing库
+//                    createQrBitmap();
+
                     //方式2 双zxing库
 //                    createQrBitmap2(count_1, count_2);
 
-                    //方式3：3zxing库
-                    int mcount_1 = size / 3;
-                    int mcount_2 = mcount_1 * 2;
+                    //方式3：3个zxing库
+
                     createQrBitmap3(mcount_1, mcount_2);
 
                 }
@@ -614,9 +617,9 @@ public class QRXmitService extends Service {
      */
     public void createQrBitmap3(final int pos1, final int pos2) {
         Log.e("SJY", "数据准备中...");
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
         long myTime = System.currentTimeMillis();//统计
-        List<Future<Boolean>> futures = new ArrayList<Future<Boolean>>(2);
+        List<Future<Boolean>> futures = new ArrayList<Future<Boolean>>(3);
 
         //生成二维码
         Callable<Boolean> task1 = new Callable<Boolean>() {
