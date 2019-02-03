@@ -16,12 +16,12 @@
 
 package com.google.myzxing2;
 
-import com.google.myzxing3.aztec.AztecReader_S;
-import com.google.myzxing3.datamatrix.DataMatrixReader_S;
-import com.google.myzxing3.maxicode.MaxiCodeReader_S;
-import com.google.myzxing3.oned.MultiFormatOneDReader_S;
-import com.google.myzxing3.pdf417.PDF417Reader_S;
-import com.google.myzxing3.qrcode.QRCodeReader_S;
+import com.google.myzxing2.aztec.AztecReader_S;
+import com.google.myzxing2.datamatrix.DataMatrixReader_S;
+import com.google.myzxing2.maxicode.MaxiCodeReader_S;
+import com.google.myzxing2.oned.MultiFormatOneDReader_S;
+import com.google.myzxing2.pdf417.PDF417Reader_S;
+import com.google.myzxing2.qrcode.QRCodeReader_S;
 
 import java.util.ArrayList;
 import java.util.Collection;

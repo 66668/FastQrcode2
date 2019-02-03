@@ -7,9 +7,9 @@ import android.util.Log;
 import com.google.myzxing2.BarcodeFormat_S;
 import com.google.myzxing2.EncodeHintType_S;
 import com.google.myzxing2.MultiFormatWriter_S;
-import com.google.myzxing3.common.BitMatrix_S;
-import com.google.myzxing3.qrcode.QRCodeWriter_S;
-import com.google.myzxing3.qrcode.decoder.ErrorCorrectionLevel_S;
+import com.google.myzxing2.common.BitMatrix_S;
+import com.google.myzxing2.qrcode.QRCodeWriter_S;
+import com.google.myzxing2.qrcode.decoder.ErrorCorrectionLevel_S;
 import com.ruijia.qrcode.Constants;
 
 import java.util.Hashtable;

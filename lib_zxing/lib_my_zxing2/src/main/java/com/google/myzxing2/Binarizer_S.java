@@ -16,8 +16,8 @@
 
 package com.google.myzxing2;
 
-import com.google.myzxing3.common.BitArray_S;
-import com.google.myzxing3.common.BitMatrix_S;
+import com.google.myzxing2.common.BitArray_S;
+import com.google.myzxing2.common.BitMatrix_S;
 
 /**
  * This class hierarchy provides a set of methods to convert luminance data to 1 bit data.

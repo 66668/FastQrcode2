@@ -16,8 +16,8 @@
 
 package com.google.myzxing2;
 
-import com.google.myzxing3.common.BitArray_S;
-import com.google.myzxing3.common.BitMatrix_S;
+import com.google.myzxing2.common.BitArray_S;
+import com.google.myzxing2.common.BitMatrix_S;
 
 /**
  * This class is the core bitmap class used by ZXing to represent 1 bit data. Reader objects

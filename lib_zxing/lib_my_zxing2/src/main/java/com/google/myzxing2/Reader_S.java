@@ -16,7 +16,7 @@
 
 package com.google.myzxing2;
 
-import com.google.myzxing3.qrcode.QRCodeReader_S;
+import com.google.myzxing2.qrcode.QRCodeReader_S;
 
 import java.util.Map;
 

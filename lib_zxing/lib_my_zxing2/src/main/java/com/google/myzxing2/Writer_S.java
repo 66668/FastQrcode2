@@ -16,7 +16,7 @@
 
 package com.google.myzxing2;
 
-import com.google.myzxing3.common.BitMatrix_S;
+import com.google.myzxing2.common.BitMatrix_S;
 
 import java.util.Map;
 

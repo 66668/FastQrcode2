@@ -22,6 +22,7 @@ import com.ruijia.qrcode.utils.CheckUtils;
 import com.ruijia.qrcode.utils.CodeUtils;
 import com.ruijia.qrcode.utils.CodeUtils_J;
 import com.ruijia.qrcode.utils.CodeUtils_S;
+import com.ruijia.qrcode.utils.CodeUtils_Y;
 import com.ruijia.qrcode.utils.ConvertUtils;
 import com.ruijia.qrcode.utils.IOUtils;
 import com.ruijia.qrcode.utils.SPUtil;
@@ -59,6 +60,7 @@ public class QRXmitService extends Service {
     private boolean isSuccess_1;//线程1执行完
     private boolean isSuccess_2;//线程2执行完
     private boolean isSuccess_3;//线程3执行完
+    private boolean isSuccess_4;//线程4执行完
     private long fileSize = 0;//文件大小
 
 
@@ -407,12 +409,17 @@ public class QRXmitService extends Service {
                     //生成flag bitmap
                     createFlagTask();
 
-
+                    //2zxing
                     int count_1 = size / 2;
-                    int count_2 = size - count_1;
-                    //
+                    //3zxing
                     int mcount_1 = size / 3;
                     int mcount_2 = mcount_1 * 2;
+
+                    //4zxing
+                    int kcount_1 = size / 4;
+                    int kcount_2 = mcount_1 * 2;
+                    int kcount_3 = mcount_1 * 3;
+
                     //
                     isSuccess_1 = false;
                     isSuccess_2 = false;
@@ -422,12 +429,13 @@ public class QRXmitService extends Service {
 //                    createQrBitmap();
 
                     //方式2 双zxing库
-//                    createQrBitmap2(count_1, count_2);
+//                    createQrBitmap2(count_1);
 
                     //方式3：3个zxing库
-
                     createQrBitmap3(mcount_1, mcount_2);
 
+                    //方式4：4个zxing库
+                    createQrBitmap4(kcount_1, kcount_2,kcount_3);
                 }
             }
         }.execute();
@@ -500,7 +508,7 @@ public class QRXmitService extends Service {
      * (4)list转qrbitmap，并保存在缓存文件中
      * <p>
      */
-    public void createQrBitmap2(final int pos1, final int pos2) {
+    public void createQrBitmap2(final int pos1) {
         Log.e("SJY", "数据准备中...");
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         long myTime = System.currentTimeMillis();//统计
@@ -516,7 +524,7 @@ public class QRXmitService extends Service {
                      */
                     long startTime = System.currentTimeMillis();
                     //sendDatas 转qrbitmap
-                    for (int i = pos1; i < size; i++) {
+                    for (int i = 0; i < pos1; i++) {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_zxing_core
@@ -556,7 +564,7 @@ public class QRXmitService extends Service {
                      */
                     long startTime = System.currentTimeMillis();
                     //倒叙生成二维码
-                    for (int j = pos2; j >= 0; j--) {
+                    for (int j = pos1; j < size; j++) {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_my_zxing库
@@ -763,6 +771,206 @@ public class QRXmitService extends Service {
             serviceStartAct();
         } else {
             Log.e("SJY", "线程1是否完成=" + isSuccess_1 + "--线程2是否完成=" + isSuccess_2 + "--线程3是否完成=" + isSuccess_3);
+        }
+        executorService.shutdown();//结束线程
+    }
+
+    /**
+     * 生成二维码（4zxing库）
+     * <p>
+     * (4)list转qrbitmap，并保存在缓存文件中
+     * <p>
+     */
+    public void createQrBitmap4(final int pos1, final int pos2,final int pos3) {
+        Log.e("SJY", "数据准备中...");
+        ExecutorService executorService = Executors.newFixedThreadPool(4);
+        long myTime = System.currentTimeMillis();//统计
+        List<Future<Boolean>> futures = new ArrayList<Future<Boolean>>(4);
+
+        //生成二维码
+        Callable<Boolean> task1 = new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                try {
+                    /**
+                     * 内容片段
+                     */
+                    long startTime = System.currentTimeMillis();
+                    //sendDatas 转qrbitmap
+                    for (int i = 0; i < pos1; i++) {
+                        //01 生成二维码
+                        long start = System.currentTimeMillis();
+                        //使用lib_zxing_core
+                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), qrSize);
+
+                        long end = System.currentTimeMillis() - start;
+                        createQrImgProgress(size, i, "线程1--生成第" + i + "张二维码耗时=" + end);
+
+                        //02 文件保存二维码
+                        long start2 = System.currentTimeMillis();
+                        BitmapCacheUtils.getInstance().put(Constants.key_bitmap + i, bitmap);
+                        long len = newDatas.get(i).length();
+                        BitmapCacheUtils.getInstance().put(Constants.key_len + i, ("" + len));
+
+                        //回调客户端
+                        long end2 = System.currentTimeMillis() - start2;
+
+                        createQrImgProgress(size, i, "线程1--bitmap保存到缓存文件耗时=" + end2);
+                    }
+                    //回调客户端
+                    long time = System.currentTimeMillis() - startTime;
+                    createQrImgTime(time, "线程1--生成二维码总耗时=" + time + "ms");
+                    return true;
+                } catch (Exception e) {
+                    Log.e("SJY", "线程1--生成内容片段异常：" + e.toString());
+                    return false;
+                }
+            }
+        };
+        //生成二维码
+        Callable<Boolean> task2 = new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                try {
+                    /**
+                     * 内容片段
+                     */
+                    long startTime = System.currentTimeMillis();
+                    //倒叙生成二维码
+                    for (int j = pos1; j < pos2; j++) {
+                        //01 生成二维码
+                        long start = System.currentTimeMillis();
+                        //使用lib_my_zxing库
+                        Bitmap bitmap = CodeUtils_S.createByMultiFormatWriter(newDatas.get(j), qrSize);
+
+                        long end = System.currentTimeMillis() - start;
+                        createQrImgProgress(size, j, "线程2--生成第" + j + "张二维码耗时=" + end);
+
+                        //02 文件保存二维码
+                        long start2 = System.currentTimeMillis();
+                        BitmapCacheUtils.getInstance().put(Constants.key_bitmap + j, bitmap);
+                        long len = newDatas.get(j).length();
+                        BitmapCacheUtils.getInstance().put(Constants.key_len + j, ("" + len));
+
+                        //回调客户端
+                        long end2 = System.currentTimeMillis() - start2;
+                        createQrImgProgress(size, j, "线程2--bitmap保存到缓存文件耗时=" + end2);
+                    }
+                    //回调客户端
+                    long time = System.currentTimeMillis() - startTime;
+                    createQrImgTime(time, "线程2--生成二维码总耗时=" + time + "ms");
+                    return true;
+                } catch (Exception e) {
+                    Log.e("SJY", "线程2--生成内容片段异常：" + e.toString());
+                    return false;
+                }
+            }
+        };
+
+        //生成二维码
+        Callable<Boolean> task3 = new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                try {
+                    /**
+                     * 内容片段
+                     */
+                    long startTime = System.currentTimeMillis();
+                    //倒叙生成二维码
+                    for (int k = pos2; k < pos3; k++) {
+                        //01 生成二维码
+                        long start = System.currentTimeMillis();
+                        //使用lib_my_zxing库
+                        Bitmap bitmap = CodeUtils_J.createByMultiFormatWriter(newDatas.get(k), qrSize);
+
+                        long end = System.currentTimeMillis() - start;
+                        createQrImgProgress(size, k, "线程3--生成第" + k + "张二维码耗时=" + end);
+
+                        //02 文件保存二维码
+                        long start2 = System.currentTimeMillis();
+                        BitmapCacheUtils.getInstance().put(Constants.key_bitmap + k, bitmap);
+                        long len = newDatas.get(k).length();
+                        BitmapCacheUtils.getInstance().put(Constants.key_len + k, ("" + len));
+
+                        //回调客户端
+                        long end2 = System.currentTimeMillis() - start2;
+                        createQrImgProgress(size, k, "线程3--bitmap保存到缓存文件耗时=" + end2);
+                    }
+                    //回调客户端
+                    long time = System.currentTimeMillis() - startTime;
+                    createQrImgTime(time, "线程3--生成二维码总耗时=" + time + "ms");
+                    return true;
+                } catch (Exception e) {
+                    Log.e("SJY", "线程3--生成内容片段异常：" + e.toString());
+                    return false;
+                }
+            }
+        };
+
+        //生成二维码
+        Callable<Boolean> task4 = new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                try {
+                    /**
+                     * 内容片段
+                     */
+                    long startTime = System.currentTimeMillis();
+                    //倒叙生成二维码
+                    for (int k = pos3; k < size; k++) {
+                        //01 生成二维码
+                        long start = System.currentTimeMillis();
+                        //使用lib_my_zxing库
+                        Bitmap bitmap = CodeUtils_Y.createByMultiFormatWriter(newDatas.get(k), qrSize);
+
+                        long end = System.currentTimeMillis() - start;
+                        createQrImgProgress(size, k, "线程4--生成第" + k + "张二维码耗时=" + end);
+
+                        //02 文件保存二维码
+                        long start2 = System.currentTimeMillis();
+                        BitmapCacheUtils.getInstance().put(Constants.key_bitmap + k, bitmap);
+                        long len = newDatas.get(k).length();
+                        BitmapCacheUtils.getInstance().put(Constants.key_len + k, ("" + len));
+
+                        //回调客户端
+                        long end2 = System.currentTimeMillis() - start2;
+                        createQrImgProgress(size, k, "线程4--bitmap保存到缓存文件耗时=" + end2);
+                    }
+                    //回调客户端
+                    long time = System.currentTimeMillis() - startTime;
+                    createQrImgTime(time, "线程4--生成二维码总耗时=" + time + "ms");
+                    return true;
+                } catch (Exception e) {
+                    Log.e("SJY", "线程4--生成内容片段异常：" + e.toString());
+                    return false;
+                }
+            }
+        };
+
+        //开启线程
+        futures.add(executorService.submit(task1));
+        futures.add(executorService.submit(task2));
+        futures.add(executorService.submit(task3));
+        futures.add(executorService.submit(task4));
+
+        //拿到结果
+        try {
+            isSuccess_1 = futures.get(0).get().booleanValue();
+            isSuccess_2 = futures.get(1).get().booleanValue();
+            isSuccess_3 = futures.get(2).get().booleanValue();
+            isSuccess_4 = futures.get(3).get().booleanValue();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        long time = System.currentTimeMillis() - myTime;
+        createQrImgTime(time, "文件转二维码且保存至文件总耗时=" + time + "ms");
+        if (isSuccess_1 && isSuccess_2 && isSuccess_3&& isSuccess_4) {
+            //service与act的交互
+            //调起链路层传输数据
+            serviceStartAct();
+        } else {
+            Log.e("SJY", "线程1是否完成=" + isSuccess_1 + "--线程2是否完成=" + isSuccess_2 + "--线程3是否完成=" + isSuccess_3+ "--线程4是否完成=" + isSuccess_4);
         }
         executorService.shutdown();//结束线程
     }

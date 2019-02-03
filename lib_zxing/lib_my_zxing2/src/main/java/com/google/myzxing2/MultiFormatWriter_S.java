@@ -16,20 +16,20 @@
 
 package com.google.myzxing2;
 
-import com.google.myzxing3.aztec.AztecWriter_S;
-import com.google.myzxing3.common.BitMatrix_S;
-import com.google.myzxing3.datamatrix.DataMatrixWriter_S;
-import com.google.myzxing3.oned.CodaBarWriter_S;
-import com.google.myzxing3.oned.Code128Writer_S;
-import com.google.myzxing3.oned.Code39Writer_S;
-import com.google.myzxing3.oned.Code93Writer_S;
-import com.google.myzxing3.oned.EAN13Writer_S;
-import com.google.myzxing3.oned.EAN8Writer_S;
-import com.google.myzxing3.oned.ITFWriter_S;
-import com.google.myzxing3.oned.UPCAWriter_S;
-import com.google.myzxing3.oned.UPCEWriter_S;
-import com.google.myzxing3.pdf417.PDF417Writer_S;
-import com.google.myzxing3.qrcode.QRCodeWriter_S;
+import com.google.myzxing2.aztec.AztecWriter_S;
+import com.google.myzxing2.common.BitMatrix_S;
+import com.google.myzxing2.datamatrix.DataMatrixWriter_S;
+import com.google.myzxing2.oned.CodaBarWriter_S;
+import com.google.myzxing2.oned.Code128Writer_S;
+import com.google.myzxing2.oned.Code39Writer_S;
+import com.google.myzxing2.oned.Code93Writer_S;
+import com.google.myzxing2.oned.EAN13Writer_S;
+import com.google.myzxing2.oned.EAN8Writer_S;
+import com.google.myzxing2.oned.ITFWriter_S;
+import com.google.myzxing2.oned.UPCAWriter_S;
+import com.google.myzxing2.oned.UPCEWriter_S;
+import com.google.myzxing2.pdf417.PDF417Writer_S;
+import com.google.myzxing2.qrcode.QRCodeWriter_S;
 
 import java.util.Map;
 

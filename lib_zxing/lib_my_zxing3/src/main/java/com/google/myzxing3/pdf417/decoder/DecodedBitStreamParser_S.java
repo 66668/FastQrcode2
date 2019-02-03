@@ -16,7 +16,7 @@
 
 package com.google.myzxing3.pdf417.decoder;
 
-import com.google.myzxing2.FormatException_S;
+import com.google.myzxing3.FormatException_S;
 import com.google.myzxing3.common.CharacterSetECI_S;
 import com.google.myzxing3.common.DecoderResult_S;
 import com.google.myzxing3.pdf417.PDF417ResultMetadata_S;
