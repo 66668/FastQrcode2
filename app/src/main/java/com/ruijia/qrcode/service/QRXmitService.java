@@ -45,7 +45,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class QRXmitService extends Service {
     public static final String TAG = "SJY";
-    private static final int qrSize = 800;//该值和屏幕宽度尺寸相关
     //---------------------------变量-------------------------------
     private Handler handler;
 
@@ -414,16 +413,17 @@ public class QRXmitService extends Service {
                     //3zxing
                     int mcount_1 = size / 3;
                     int mcount_2 = mcount_1 * 2;
-
+                    Log.e("SJY", "mcount_1=" + mcount_1 + "--mcount_2=" + mcount_2);
                     //4zxing
                     int kcount_1 = size / 4;
-                    int kcount_2 = mcount_1 * 2;
-                    int kcount_3 = mcount_1 * 3;
-
+                    int kcount_2 = kcount_1 * 2;
+                    int kcount_3 = kcount_1 * 3;
+                    Log.e("SJY", "kcount_1=" + kcount_1 + "--kcount_2=" + kcount_2 + "--kcount_3=" + kcount_3);
                     //
                     isSuccess_1 = false;
                     isSuccess_2 = false;
                     isSuccess_3 = false;
+                    isSuccess_4 = false;
 
                     //方式1 单zxing库
 //                    createQrBitmap();
@@ -432,10 +432,10 @@ public class QRXmitService extends Service {
 //                    createQrBitmap2(count_1);
 
                     //方式3：3个zxing库
-                    createQrBitmap3(mcount_1, mcount_2);
+//                    createQrBitmap3(mcount_1, mcount_2);
 
                     //方式4：4个zxing库
-                    createQrBitmap4(kcount_1, kcount_2,kcount_3);
+                    createQrBitmap4(kcount_1, kcount_2, kcount_3);
                 }
             }
         }.execute();
@@ -528,7 +528,7 @@ public class QRXmitService extends Service {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_zxing_core
-                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), qrSize);
+                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), Constants.qrBitmapSize);
 
                         long end = System.currentTimeMillis() - start;
                         createQrImgProgress(size, i, "线程1--生成第" + i + "张二维码耗时=" + end);
@@ -568,7 +568,7 @@ public class QRXmitService extends Service {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_my_zxing库
-                        Bitmap bitmap = CodeUtils_S.createByMultiFormatWriter(newDatas.get(j), qrSize);
+                        Bitmap bitmap = CodeUtils_S.createByMultiFormatWriter(newDatas.get(j), Constants.qrBitmapSize);
 
                         long end = System.currentTimeMillis() - start;
                         createQrImgProgress(size, j, "线程2--生成第" + j + "张二维码耗时=" + end);
@@ -643,7 +643,7 @@ public class QRXmitService extends Service {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_zxing_core
-                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), qrSize);
+                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), Constants.qrBitmapSize);
 
                         long end = System.currentTimeMillis() - start;
                         createQrImgProgress(size, i, "线程1--生成第" + i + "张二维码耗时=" + end);
@@ -683,7 +683,7 @@ public class QRXmitService extends Service {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_my_zxing库
-                        Bitmap bitmap = CodeUtils_S.createByMultiFormatWriter(newDatas.get(j), qrSize);
+                        Bitmap bitmap = CodeUtils_S.createByMultiFormatWriter(newDatas.get(j), Constants.qrBitmapSize);
 
                         long end = System.currentTimeMillis() - start;
                         createQrImgProgress(size, j, "线程2--生成第" + j + "张二维码耗时=" + end);
@@ -723,7 +723,7 @@ public class QRXmitService extends Service {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_my_zxing库
-                        Bitmap bitmap = CodeUtils_J.createByMultiFormatWriter(newDatas.get(k), qrSize);
+                        Bitmap bitmap = CodeUtils_J.createByMultiFormatWriter(newDatas.get(k), Constants.qrBitmapSize);
 
                         long end = System.currentTimeMillis() - start;
                         createQrImgProgress(size, k, "线程3--生成第" + k + "张二维码耗时=" + end);
@@ -781,7 +781,7 @@ public class QRXmitService extends Service {
      * (4)list转qrbitmap，并保存在缓存文件中
      * <p>
      */
-    public void createQrBitmap4(final int pos1, final int pos2,final int pos3) {
+    public void createQrBitmap4(final int pos1, final int pos2, final int pos3) {
         Log.e("SJY", "数据准备中...");
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         long myTime = System.currentTimeMillis();//统计
@@ -801,7 +801,7 @@ public class QRXmitService extends Service {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_zxing_core
-                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), qrSize);
+                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), Constants.qrBitmapSize);
 
                         long end = System.currentTimeMillis() - start;
                         createQrImgProgress(size, i, "线程1--生成第" + i + "张二维码耗时=" + end);
@@ -841,7 +841,7 @@ public class QRXmitService extends Service {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_my_zxing库
-                        Bitmap bitmap = CodeUtils_S.createByMultiFormatWriter(newDatas.get(j), qrSize);
+                        Bitmap bitmap = CodeUtils_S.createByMultiFormatWriter(newDatas.get(j), Constants.qrBitmapSize);
 
                         long end = System.currentTimeMillis() - start;
                         createQrImgProgress(size, j, "线程2--生成第" + j + "张二维码耗时=" + end);
@@ -881,7 +881,7 @@ public class QRXmitService extends Service {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_my_zxing库
-                        Bitmap bitmap = CodeUtils_J.createByMultiFormatWriter(newDatas.get(k), qrSize);
+                        Bitmap bitmap = CodeUtils_J.createByMultiFormatWriter(newDatas.get(k), Constants.qrBitmapSize);
 
                         long end = System.currentTimeMillis() - start;
                         createQrImgProgress(size, k, "线程3--生成第" + k + "张二维码耗时=" + end);
@@ -921,7 +921,7 @@ public class QRXmitService extends Service {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
                         //使用lib_my_zxing库
-                        Bitmap bitmap = CodeUtils_Y.createByMultiFormatWriter(newDatas.get(k), qrSize);
+                        Bitmap bitmap = CodeUtils_Y.createByMultiFormatWriter(newDatas.get(k), Constants.qrBitmapSize);
 
                         long end = System.currentTimeMillis() - start;
                         createQrImgProgress(size, k, "线程4--生成第" + k + "张二维码耗时=" + end);
@@ -965,12 +965,12 @@ public class QRXmitService extends Service {
 
         long time = System.currentTimeMillis() - myTime;
         createQrImgTime(time, "文件转二维码且保存至文件总耗时=" + time + "ms");
-        if (isSuccess_1 && isSuccess_2 && isSuccess_3&& isSuccess_4) {
+        if (isSuccess_1 && isSuccess_2 && isSuccess_3 && isSuccess_4) {
             //service与act的交互
             //调起链路层传输数据
             serviceStartAct();
         } else {
-            Log.e("SJY", "线程1是否完成=" + isSuccess_1 + "--线程2是否完成=" + isSuccess_2 + "--线程3是否完成=" + isSuccess_3+ "--线程4是否完成=" + isSuccess_4);
+            Log.e("SJY", "线程1是否完成=" + isSuccess_1 + "--线程2是否完成=" + isSuccess_2 + "--线程3是否完成=" + isSuccess_3 + "--线程4是否完成=" + isSuccess_4);
         }
         executorService.shutdown();//结束线程
     }
@@ -997,7 +997,7 @@ public class QRXmitService extends Service {
                         //01 生成二维码
                         long start = System.currentTimeMillis();
 
-                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), qrSize);
+                        Bitmap bitmap = CodeUtils.createByMultiFormatWriter(newDatas.get(i), Constants.qrBitmapSize);
 
                         long end = System.currentTimeMillis() - start;
                         createQrImgProgress(size, i, "生成第" + i + "张二维码耗时=" + end);
