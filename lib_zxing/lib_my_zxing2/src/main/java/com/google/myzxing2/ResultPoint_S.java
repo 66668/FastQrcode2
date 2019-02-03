@@ -16,7 +16,7 @@
 
 package com.google.myzxing2;
 
-import com.google.myzxing2.common.detector.MathUtils_S;
+import com.google.myzxing3.common.detector.MathUtils_S;
 
 /**
  * <p>Encapsulates a point of interest in an image containing a barcode. Typically, this

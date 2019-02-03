@@ -16,12 +16,7 @@
 
 package com.google.myzxing2;
 
-import com.google.myzxing2.qrcode.QRCodeReader_S;
-import com.google.myzxing2.BinaryBitmap_S;
-import com.google.myzxing2.ChecksumException_S;
-import com.google.myzxing2.DecodeHintType_S;
-import com.google.myzxing2.FormatException_S;
-import com.google.myzxing2.NotFoundException_S;
+import com.google.myzxing3.qrcode.QRCodeReader_S;
 
 import java.util.Map;
 

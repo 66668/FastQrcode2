@@ -4,9 +4,9 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.myzxing2.BarcodeFormat_S;
-import com.google.myzxing2.EncodeHintType_S;
-import com.google.myzxing2.MultiFormatWriter_S;
+import com.google.myzxing3.BarcodeFormat_S;
+import com.google.myzxing3.EncodeHintType_S;
+import com.google.myzxing3.MultiFormatWriter_S;
 import com.google.myzxing3.common.BitMatrix_S;
 import com.google.myzxing3.qrcode.QRCodeWriter_S;
 import com.google.myzxing3.qrcode.decoder.ErrorCorrectionLevel_S;
@@ -18,7 +18,7 @@ import java.util.Hashtable;
  * 本地zxing库：lib_my_zxing2 生成二维码的工具类,
  * 说明：本app使用了三个zing库用于生成二维码图片，该工具类对应的本地库是：lib_my_zxing2
  */
-public class CodeUtils_J {
+public class CodeUtils_Y {
 
     /**
      * MultiFormatWriter 类

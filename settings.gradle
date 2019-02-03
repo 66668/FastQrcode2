@@ -6,3 +6,4 @@ include ':fileapp'
 include ':lib_zxing:lib_zxing_core'//zxing core3.3.3的源码
 include ':lib_zxing:lib_my_zxing'//基于lib_zxing_core修改的zxing，目的方便多线程生成二维码
 include ':lib_zxing:lib_my_zxing2'//基于lib_zxing_core修改的zxing，目的方便多线程生成二维码
+include ':lib_zxing:lib_my_zxing3'//基于lib_zxing_core修改的zxing，目的方便多线程生成二维码
