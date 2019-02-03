@@ -84,7 +84,7 @@
 ## 性能优化分析
 ### 倒计时优化:handler.postdelay倒计时不准确，改为 Timer+runOnUiThread方式
 
-### 3个zxing库，双zxing库和单zxing库速度提升测试
+### 4个zxing库，3个zxing库，双zxing库和单zxing库速度提升测试
 考虑需要极限传输，zxing库只能串行将片段转成二维码，即一个库只支持同时生成一张图，如果两个库那么速度就能够提升，如果3个库呢。
 以900KB的.jpg文件为例，测试速度区别
 
