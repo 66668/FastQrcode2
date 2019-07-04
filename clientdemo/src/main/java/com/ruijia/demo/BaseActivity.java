@@ -115,7 +115,6 @@ public class BaseActivity extends AppCompatActivity {
         }
     };
 
-
     /**
      * 监听Binder是否死亡
      */
