@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -114,7 +115,6 @@ public class BaseActivity extends AppCompatActivity {
         }
     };
 
-
     /**
      * 监听Binder是否死亡
      */
@@ -165,12 +165,16 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void unbind() {
-        if (connection != null && ibinder.asBinder().isBinderAlive()) {
+        if (connection != null && ibinder != null && ibinder.asBinder().isBinderAlive()) {
             try {
                 ibinder.unregister(callback);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+            unbindService(connection);
+        } else {
+            Log.e("SJY", "进程间通讯中断");
+            //act销毁需要调用，不可以缺失
             unbindService(connection);
         }
     }
@@ -180,6 +184,8 @@ public class BaseActivity extends AppCompatActivity {
         super.onDestroy();
         unbind();
     }
+
+    //==============================================================================
 
     private void toStartPermission() {
         permissionHelper = new PermissionHelper(this, new PermissionInterface() {

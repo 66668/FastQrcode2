@@ -1,9 +1,15 @@
 package com.ruijia.qrcode;
 
+import android.os.Environment;
+
 /**
  * 原生摄像头的常量池
  */
 public class Constants {
+
+    public static String BASE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/qrcode_cache";
+    public static String FILE_BITMAP_NAME = "qrcode_bitmap";
+    public static String FILE_COMMON_NAME = "qrcode";
     /**
      * ===================发送端/接收端 通用标记=====================
      */
@@ -17,8 +23,31 @@ public class Constants {
     public static String send_init = "QrcodeSENDCONNECTQrcodeSENDCONNECT";//发送端 发送连接信息，通知接收端初始化数据
     public static String recv_init = "QrcodeRECVCONNECTQrcodeRECVCONNECT";//接收端 发送连接信息，通知发送端发送数据
 
+    /**
+     * ===================发送端/接收端 通用标记--缓存文件对应的key值=====================
+     */
+    //~~~标记图的key~~~
+    //
+    public static String flag_recv_init = "flag_recv_init";
+    public static String flag_recv_init_length = "flag_recv_init_length";
+    //
+    public static String flag_recv_success = "flag_recv_success";
+    public static String flag_recv_success_length = "flag_recv_success_length";
+    //
+    public static String flag_recv_failed = "flag_recv_failed";
+    public static String flag_recv_failed_length = "flag_recv_failed_length";
+
+    public static String flag_send_over = "flag_send_over";
+    public static String flag_send_over_length = "flag_send_over_length";
+
+    //~~~内容的key~~~
+    //bitmap key
+    public static String key_bitmap = "key_bitmap";
+    //内容长度 key
+    public static String key_len = "key_len";
+
     //================================================================================
-    //==========================整体流程控制参数设置============================
+    //==========================流程控制 参数配置============================
     //================================================================================
 
     public static final int FOCUS_TIME = 2000;//摄像头聚焦间隔（使二维码更好识别的暴力方式） ms
@@ -29,7 +58,13 @@ public class Constants {
 
     public static final int SEND_FLAG_TIME = 2500;//发送端：最后一张图显示时间 ms
 
-    public static final int RECV_FLAG_TIME = 5000;//接收端：最后一张图显示时间 ms
+    public static final int RECV_FLAG_TIME = 4000;//接收端：最后一张图显示时间 ms
+
+    public static final int INIT_CONNECT_DELAY = 2000;//延迟连接对端，给线程池准备数据的时间
+
+    public static final int MAX_QR_COUNT = 60;//链路线程池中最大二维码数量
+
+    public static final int MIN_QR_COUNT = 10;//链路线程池中最小二维码数量
 
     /**
      * 发送时间间隔
@@ -69,21 +104,20 @@ public class Constants {
      * <p>
      * 最强性能长度 2935
      */
-    public static final int qrSize = 2930;//
+    public static final int qrSize = 2930;//(保证最大传输，最好不要改)
 
     /**
      * zxing3.3.3库最大string值是2952
      */
     public static final int MAX_QR_SIZE = 2952;//
 
-    public static final int qrBitmapSize = 200;//二维码最大支持的尺寸，默认为200
+    public static final int qrBitmapSize = 200;//二维码最大支持的尺寸，默认为200（越小，二维码图片越模糊）
 
 
     /**
      * 识别过程，最大20次来回传图没有结果，强制结束
      */
     public static final int MAX_SEND_TIMES = 20;
-
 
     /**
      * 最开始的时间
@@ -103,3 +137,4 @@ public class Constants {
 
 
 }
+
